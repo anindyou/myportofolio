@@ -1,61 +1,190 @@
-<!DOCTYPE html>
+{% load static %}
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anin - Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="#profile" class="brand">Anin</a>
-            <nav>
-                <a href="#profile">Profile</a>
-            </nav>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anindya Raihani Hassan — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Plus+Jakarta+Sans:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <div class="hero-grid" aria-hidden="true"></div>
+
+    <header class="navbar">
+      <a href="#top" class="logo">Anin</a>
+      <a href="#" class="nav-link">Profile</a>
     </header>
 
-    <main>
-        <section class="hero" id="profile">
-            <div class="container hero-grid">
-                <div class="hero-identity">
-                    <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
-                    <h1>Anindya Raihani Hassan</h1>
-                </div>
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/anin depan rektorat.jpg" alt="Photo of Anindya Raihani Hassan">
-                </div>
-                <div class="hero-details">
-                    <p class="bio">CS student at Universitas Indonesia for longer than planned, now a familiar (and slightly dreaded) face among Fasilkom students as a teaching assistant across several courses.</p>
-                    <dl class="meta-list">
-                        <div class="meta-row">
-                            <dt>NPM</dt>
-                            <dd>2506553295</dd>
-                        </div>
-                        <div class="meta-row">
-                            <dt>Program</dt>
-                            <dd>S1 Ilmu Komputer</dd>
-                        </div>
-                    </dl>
-                    <div class="social-links">
-                        <a href="https://github.com/anindyou" class="social-link">GitHub</a>
-                        <a href="www.linkedin.com/in/anindya-raihani-hassan" class="social-link">LinkedIn</a>
-                        <a href="mailto:anindyarh7@gmail.com" class="social-link">Email</a>
-                    </div>
-                </div>
+    <main id="top">
+      <!-- Hero -->
+      <section class="hero">
+        <div class="intro">
+          <p class="eyebrow">Computer Science @Universitas Indonesia</p>
+          <h1>Design &amp; Build</h1>
+          <p class="bio">
+            Hello, I'm <strong>Anin</strong>dya Raihani Hassan. Computer Science
+            student at Universitas Indonesia who combines UI/UX design and
+            front-end development to turn raw ideas into clean, functional, and
+            fully shipped projects.
+          </p>
+
+          <div class="meta-row">
+            <div class="meta-item">
+              <span class="meta-label">NPM</span>
+              <span class="meta-value">2506553295</span>
             </div>
-        </section>
+            <div class="meta-item">
+              <span class="meta-label">Program</span>
+              <span class="meta-value">S1 Ilmu Komputer</span>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <a href="https://github.com/anindyou" class="btn">Github</a>
+            <a href="www.linkedin.com/in/anindya-raihani-hassan" class="btn">LinkedIn</a>
+            <a href="mailto:anindyarh7@gmail.com" class="btn">Email</a>
+          </div>
+        </div>
+
+        <div class="photo-stack" aria-hidden="true">
+          <div class="stack-card stack-card--back"></div>
+          <div class="stack-card stack-card--mid"></div>
+          <div class="stack-card stack-card--front">
+            <img src="{% static 'img/anin.jpg' %}" alt="Anin" class="stack-card stack-card--front">
+          </div>
+        </div>
+      </section>
+
+      <!-- Services -->
+      <section class="services">
+        <div class="section-title">
+          <h2>What I bring to the table</h2>
+          <p>
+            A mix of skills I've picked up, from crafting interfaces to writing
+            the code behind them.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <article class="service-card">
+            <div class="icon" aria-hidden="true">
+              <span
+              class="icon-mask"
+              style="--icon-url: url('{% static 'img/figma-icon.png' %}')"
+            ></span>
+            </div>
+            <h3>UI/UX Design</h3>
+            <p>
+              I design intuitive, user-first interfaces, from wireframes to
+              polished prototypes, that make products easy and enjoyable to use.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon" aria-hidden="true">
+              <span
+                class="icon-mask"
+                style="--icon-url: url('{% static 'img/web-dev-icon.png' %}')"
+              ></span>
+            </div>
+            <h3>Web Development</h3>
+            <p>
+              I build responsive, functional websites, turning static designs
+              into interactive, working experiences.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon" aria-hidden="true">
+              <span
+                class="icon-mask"
+                style="--icon-url: url('{% static 'img/graphic-design-icon.png' %}')"
+              ></span>
+            </div>
+            <h3>Graphic Design</h3>
+            <p>
+              I create visual assets like posters, social media graphics, and
+              presentation decks that communicate ideas clearly.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section class="experience">
+        <div class="section-title">
+          <h2>Where I've Been</h2>
+          <p>A few things I've worked on and learned from along the way.</p>
+        </div>
+
+        <div class="experience-list">
+          <article class="experience-card">
+            <span class="exp-mark" aria-hidden="true"></span>
+            <div class="exp-body">
+              <div class="exp-heading">
+                <h3>Staff UX Academy</h3>
+                <div class="exp-meta">
+                  <span>COMPFEST 18 - Fasilkom UI</span>
+                  <span class="exp-date">Apr 2026 - Sept 2026</span>
+                </div>
+              </div>
+              <p>
+                Helped organize and run UX Academy workshops, managing event
+                logistics, building timelines, and designing presentation
+                materials for participants.
+              </p>
+            </div>
+          </article>
+
+          <article class="experience-card">
+            <span class="exp-mark" aria-hidden="true"></span>
+            <div class="exp-body">
+              <div class="exp-heading">
+                <h3>Participant at Datathon</h3>
+                <div class="exp-meta">
+                  <span>Ristek Fasilkom UI</span>
+                  <span class="exp-date">July 2026</span>
+                </div>
+              </div>
+              <p>
+                Competed in a data science challenge that included a Kaggle
+                competition and an AI product research paper, diving deep into
+                applying machine learning to real-world problems.
+              </p>
+            </div>
+          </article>
+
+          <article class="experience-card">
+            <span class="exp-mark" aria-hidden="true"></span>
+            <div class="exp-body">
+              <div class="exp-heading">
+                <h3>Participant at Product Design RISTEK Open Class</h3>
+                <div class="exp-meta">
+                  <span>Ristek Fasilkom UI</span>
+                  <span class="exp-date">Oct 2025</span>
+                </div>
+              </div>
+              <p>
+                A week-long Figma workshop covering wireframing, prototyping,
+                and UI design fundamentals.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 Anindya Raihani Hassan. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
+    <footer class="footer">
+      <p>
+        © 2026 Anindya Raihani Hassan. Fakultas Ilmu Komputer, Universitas
+        Indonesia.
+      </p>
     </footer>
-</body>
+  </body>
 </html>
