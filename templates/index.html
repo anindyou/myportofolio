@@ -1,5 +1,6 @@
 {% load static %}
 <!doctype html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,43 +8,45 @@
     <title>Anindya Raihani Hassan — Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Plus+Jakarta+Sans:wght@700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   </head>
+
   <body>
     <div class="hero-grid" aria-hidden="true"></div>
-
     <header class="navbar">
       <a href="#top" class="logo">Anin</a>
-      <a href="#" class="nav-link">Profile</a>
+    <nav>
+      <a href="#top" class="nav-link">Profile</a>
+      <a href="#services" class="nav-link">Services</a> 
+      <a href="#experience" class="nav-link">Experience</a>
+    </nav>
     </header>
 
     <main id="top">
       <!-- Hero -->
       <section class="hero">
         <div class="intro">
-          <p class="eyebrow">Computer Science @Universitas Indonesia</p>
+          <p class="eyebrow">Computer Science @ Universitas Indonesia</p>
           <h1>Design &amp; Build</h1>
           <p class="bio">
-            Hello, I'm <strong>Anin</strong>dya Raihani Hassan. Computer Science
+            Hello, I'm {{name}}. Computer Science
             student at Universitas Indonesia who combines UI/UX design and
             front-end development to turn raw ideas into clean, functional, and
             fully shipped projects.
           </p>
 
-          <div class="meta-row">
+          <dl class="meta-row">
             <div class="meta-item">
-              <span class="meta-label">NPM</span>
-              <span class="meta-value">2506553295</span>
+              <dt class="meta-label">NPM</dt>
+              <dd class="meta-value">2506553295</dd>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Program</span>
-              <span class="meta-value">S1 Ilmu Komputer</span>
+              <dt class="meta-label">Program</dt>
+              <dd class="meta-value">S1 Ilmu Komputer</dd>
             </div>
-          </div>
+          </dl>
 
           <div class="button-row">
             <a href="https://github.com/anindyou" class="btn">Github</a>
@@ -52,7 +55,7 @@
           </div>
         </div>
 
-        <div class="photo-stack" aria-hidden="true">
+        <div class="photo-stack" aria-hidden="true"> 
           <div class="stack-card stack-card--back"></div>
           <div class="stack-card stack-card--mid"></div>
           <div class="stack-card stack-card--front">
@@ -62,7 +65,7 @@
       </section>
 
       <!-- Services -->
-      <section class="services">
+      <section class="services" id="services">
         <div class="section-title">
           <h2>What I bring to the table</h2>
           <p>
@@ -117,7 +120,7 @@
       </section>
 
       <!-- Experience -->
-      <section class="experience">
+      <section class="experience" id="experience">
         <div class="section-title">
           <h2>Where I've Been</h2>
           <p>A few things I've worked on and learned from along the way.</p>
