@@ -1,13 +1,17 @@
-/* ===== Design tokens ===== */
 :root {
   --bg: #1f2129;
   --fg: #f4f5f7;
-  --fg-strong: #ffffff;
   --fg-muted: #caced9;
   --card-border: #f4f5f7;
 
   --font-display: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', sans-serif;
+
+  /* Main font size */
+  --text-base: 16px;
+  --text-md: 20px; 
+  --text-title: 40px;
+  --text-hero: 48px;
 
   --space-1: 8px;
   --space-2: 16px;
@@ -23,22 +27,19 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; } /* supaya scrolling ketika pindah section smooth */
 
 body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: var(--text-base);
   line-height: 1.5;
   overflow-x: hidden;
   position: relative;
 }
 
-/* ===== Decorative grid background =====
-   Approximates the Framer design's grid-through-a-soft-highlight effect:
-   an 80px grid, faded out toward the bottom via a mask. Lives behind the
-   hero only. Tweak the mask stops to change how far down it fades. */
+/* Grid background */
 .hero-grid {
   position: absolute;
   top: 0;
@@ -56,9 +57,9 @@ body {
   z-index: 0;
 }
 
-main, header, footer { position: relative; z-index: 1; }
+main, header, footer { position: relative; z-index: 1; } 
 
-/* ===== Layout helpers ===== */
+/* ===== Layout ===== */
 section { padding: var(--space-12) var(--container-padding); }
 
 .section-title {
@@ -73,12 +74,12 @@ section { padding: var(--space-12) var(--container-padding); }
 .section-title h2 {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--fg-strong);
-  font-size: 40px;
+  color: var(--fg);
+  font-size: var(--text-title);
 }
 
-.section-title p {
-  font-size: 18px;
+.section-title p { 
+  font-size: var(--text-base);
   max-width: 640px;
 }
 
@@ -88,30 +89,36 @@ section { padding: var(--space-12) var(--container-padding); }
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4) var(--container-padding);
-  position: sticky;  /* tambahin ini */
-  top: 0;             /* tambahin ini */
-  z-index: 10;        /* tambahin ini */
+  position: sticky;  /* biar navbar tetap keliatan ketika halaman di scroll */
+  top: 0;             
+  z-index: 10;        
   background: var(--bg); 
 }
 
+.navbar nav {
+  display: flex;
+  gap: var(--space-4); 
+}
+
+.logo, .nav-link{
+    font-weight: 400;
+}
 .logo {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--fg-strong);
+  font-size: var(--text-base);
+  color: var(--fg);
   text-decoration: none;
 }
 
 .nav-link {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--fg-strong);
+  font-size: var(--text-base);
+  color: var(--fg);
   text-decoration: none;
 }
 
 /* ===== Hero ===== */
-.hero {
+.hero { /* ini kenapa pilih grid dan 1fr 1fr artinya apa */
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-12);
@@ -120,42 +127,41 @@ section { padding: var(--space-12) var(--container-padding); }
   padding-bottom: var(--space-8);
 }
 
+/* kenapa ini pilih flex sedangkan yang di atas grid? */
 .intro { display: flex; flex-direction: column; gap: var(--space-3); }
 
-/* CompSci */
-.eyebrow { font-size: 16px; color: var(--fg-strong); white-space: nowrap;}
+.eyebrow { font-size: var(--text-base); color: var(--fg); white-space: nowrap;}
 
 .hero h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--fg-strong);
-  font-size: 48px;
+  color: var(--fg);
+  font-size: var(--text-hero);
   line-height: 1.1;
 }
 
-.bio { font-size: 16px; color: var(--fg-strong); max-width: 80ch; }
-.bio strong { font-weight: 700; }
+.bio { font-size: var(--text-base); color: var(--fg); max-width: 80ch; }
 
 .meta-row { display: flex; gap: var(--space-6); }
 
 .meta-item { display: flex; flex-direction: column; gap: 4px; }
 
-.meta-label { font-weight: 700; font-size: 16px; color: var(--fg-strong); }
+.meta-label { font-weight: 700; font-size: var(--text-base); color: var(--fg); }
 
-.meta-value { font-size: 16px; color: var(--fg-strong); }
+.meta-value { font-size: var(--text-base); color: var(--fg); }
 
 .button-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
 
 .btn {
-  display: inline-flex;
+  display: inline-flex; /* width button tergantung panjang teks */
   align-items: center;
   justify-content: center;
   padding: 8px 16px;
   border-radius: var(--radius);
   border: 1px solid var(--card-border);
-  color: var(--fg-strong);
+  color: var(--fg);
   text-decoration: none;
-  font-size: 16px;
+  font-size: var(--text-base);
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
@@ -169,13 +175,14 @@ section { padding: var(--space-12) var(--container-padding); }
   transform: scale(1.05);
 }
 
-/* Decorative stacked "photo" placeholder (solid cards, per new design) */
+/* Foto dan kotak-kotak di belakangnya */
 .photo-stack {
   position: relative;
   height: 380px;
   justify-self: center;
   width: 100%;
   max-width: 420px;
+  z-index: 1;
 }
 
 .stack-card {
@@ -185,13 +192,26 @@ section { padding: var(--space-12) var(--container-padding); }
   width: 300px;
   height: 300px;
   border-radius: var(--radius);
-  background: #ffffff;
+  background: var(--fg);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1), 0 33px 33px rgba(0, 0, 0, 0.09);
 }
 
-.stack-card--back { transform: translate(-50%, -50%) rotate(-12deg); }
-.stack-card--mid { transform: translate(-50%, -50%) rotate(8deg); }
-.stack-card--front { transform: translate(-50%, -50%) rotate(0deg); }
+.stack-card--back { transform: translate(-65%, -45%) rotate(-9deg); transition: transform 0.3s ease;} 
+.stack-card--mid { transform: translate(-40%, -38%) rotate(8deg); transition: transform 0.3s ease;}
+.stack-card--front { transform: translate(-50%, -50%) rotate(0deg); transition: transform 0.3s ease;}
+
+/* hover di parent, terus masing2 kartu gerak sesuai transform korespondensinya */
+.photo-stack:hover .stack-card--back {
+  transform: translate(-80%, -48%) rotate(-14deg);
+}
+
+.photo-stack:hover .stack-card--mid {
+  transform: translate(-20%, -45%) rotate(10deg);
+}
+
+.photo-stack:hover .stack-card--front{
+    transform: translate(-50%, -50%) scale(1.03);
+}
 
   /* ===== Services ===== */
   .cards-grid {
@@ -212,7 +232,7 @@ section { padding: var(--space-12) var(--container-padding); }
     justify-content: center; 
     gap: var(--space-2);
     transition: border-color 0.2s ease, transform 0.2s ease;
-    width: 320px;
+    width: 320px; /* fix weight and height */
     height: 320px;
     transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
   }
@@ -236,12 +256,13 @@ section { padding: var(--space-12) var(--container-padding); }
 
   .service-card h3 {
     font-weight: 700;
-    color: var(--fg-strong);
-    font-size: 20px;
+    color: var(--fg);
+    font-size: var(--text-md);
   }
 
-  .service-card p { font-size: 16px; }
+  .service-card p { font-size: var(--text-base); }
 
+  /* Ketika dihover, pake masking supaya gambar icon bisa berubah warna (putih/hitam)*/
   .icon-mask {
   display: block;
   width: 40px;
@@ -281,11 +302,12 @@ section { padding: var(--space-12) var(--container-padding); }
   flex-shrink: 0;
   width: 4px;
   border-radius: 16px;
-  background: var(--fg-strong);
+  background: var(--fg);
   opacity: 0; 
   transition: opacity 0.25s ease;
 }
 
+/* Bar di kiri cuman muncul ketika dihover saja */
 .experience-card:hover .exp-mark {
   opacity: 1;
 }
@@ -297,34 +319,32 @@ section { padding: var(--space-12) var(--container-padding); }
 .exp-heading h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--fg-strong);
-  font-size: 20px;
+  color: var(--fg);
+  font-size: var(--text-md);
 }
 
 .exp-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 16px;
-  color: var(--fg-strong);
+  font-size: var(--text-base);
+  color: var(--fg);
   flex-wrap: wrap;
   gap: 4px;
 }
 
 .exp-date { color: var(--fg-muted); }
 
-.exp-body p { font-size: 16px; color: var(--fg-strong); }
+.exp-body p { font-size: var(--text-base); color: var(--fg); }
 
 /* ===== Footer ===== */
 .footer {
   padding: var(--space-6) var(--container-padding);
-  font-size: 16px;
+  font-size: var(--text-base);
 }
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   :root { --container-padding: 48px; }
-
-  .cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -334,7 +354,7 @@ section { padding: var(--space-12) var(--container-padding); }
     --space-8: 32px;
   }
   .eyebrow {
-    white-space: normal; 
+    white-space: normal; /* Biar di viewport sempit teks nya ga nimpa */
   }
 
   .navbar { padding: var(--space-2) var(--container-padding); }
@@ -349,15 +369,13 @@ section { padding: var(--space-12) var(--container-padding); }
 
   .hero h1 { font-size: 32px; }
   .section-title h2 { font-size: 28px; }
-  .section-title p { font-size: 16px; }
-
-  .cards-grid { grid-template-columns: 1fr; }
+  .section-title p { font-size: var(--text-base); }
 
   .experience-card { padding: var(--space-2) 0; }
 
-  .exp-heading h3 { font-size: 20px; }
-  .exp-meta { flex-direction: column; gap: 2px; font-size: 16px; }
-  .exp-body p { font-size: 16px; }
+  .exp-heading h3 { font-size: var(--text-md); }
+  .exp-meta { flex-direction: column; gap: 2px; font-size: var(--text-base); }
+  .exp-body p { font-size: var(--text-base); }
 
   .meta-row { flex-wrap: wrap; gap: var(--space-3); }
 
@@ -365,6 +383,6 @@ section { padding: var(--space-12) var(--container-padding); }
 }
 
 @media (max-width: 420px) {
-  .hero h1 { font-size: 26px; }
+  .hero h1 { font-size: 28px; }
   .bio, .service-card p, .exp-body p { font-size: 15px; }
 }
