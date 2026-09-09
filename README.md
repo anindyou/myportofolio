@@ -35,3 +35,10 @@ link figma: https://www.figma.com/proto/AXqN1DCBqLUiTjETsTN8tg/Untitled?node-id=
 5. Keterbatasan lain: saat meminta animasi hover yang mengubah warna icon, saran awal Claude menggunakan `filter: invert(1)` ternyata tidak menghasilkan warna spesifik yang saya inginkan (invert cuma balik nilai RGB, bukan ganti ke warna tertentu). Solusi akhirnya menggunakan teknik `mask-image` di CSS, yang memisahkan bentuk icon dari warnanya, sehingga warna hover bisa diatur presisi lewat `background-color`.
    ![1](static/img/screenshots/ai-hover.png)
    ![2](static/img/screenshots/ai-invert.png)
+
+### Tutorial 2
+
+Terdapat beberapa penyesuaian yang saya lakukan di Tutorial 2 (tidak mengikuti template sepenuhnya):
+
+- **Menghapus `EXPERIENCE_CHOICES`** — sejak awal desain portofolio ini tidak menggunakan kategori pengalaman, dan diganti dengan field `institution` (nama penyelenggara/instansi) yang dirasa lebih relevan.
+- **Navigation bar di halaman utama** berfungsi untuk _scroll_ ke bagian terkait di halaman yang sama. Halaman baru `experience.html` diakses lewat tombol **"View More"**, bukan lewat item navbar.
