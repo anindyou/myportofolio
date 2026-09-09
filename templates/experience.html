@@ -1,0 +1,68 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Experience — {{name}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <header>
+      <a href="{% url 'main:show_main' %}#experience" class="back-btn" aria-label="Back to home">
+        <span
+          class="icon-mask"
+          style="--icon-url: url('{% static 'img/back-arrow.png' %}')"
+        ></span>
+      </a>
+    </header>
+    <main>
+      <section class="experience" id="experience">
+        <div class="section-title">
+          <h2>Where I've Been</h2>
+          <p>A few things I've worked on and learned from along the way.</p>
+        </div>
+
+        <div class="experience-list">
+          {% for experience in experience_list %}
+            <article class="experience-card">
+              <span class="exp-mark" aria-hidden="true"></span>
+              <div class="exp-body">
+                <div class="exp-heading">
+                  <h3>{{ experience.title }}</h3>
+                  <div class="exp-meta">
+                    <span>{{ experience.institution }}</span>
+                    <span class="exp-date"> <!-- Ganti jadi format 3 huruf bulan dan 2 digit tahun -->
+                      {{ experience.started_at|date:"M y" }} 
+                      {% if experience.is_ongoing %}
+                        Sedang berlangsung
+                      {% else %}
+                        - {{ experience.ended_at|date:"M y" }}
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+                <p>{{ experience.description }}</p>
+              </div>
+            </article>
+          {% empty %}
+            <p class="empty-state">Belum ada pengalaman yang ditambahkan.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>
+        © 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas
+        Indonesia.
+      </p>
+    </footer>
+  </body>
+</html>

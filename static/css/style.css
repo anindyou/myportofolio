@@ -3,6 +3,8 @@
   --fg: #f4f5f7;
   --fg-muted: #caced9;
   --card-border: #f4f5f7;
+  --unselect: #969CAC;
+  --card-alt: #252938;
 
   --font-display: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -84,41 +86,64 @@ section { padding: var(--space-12) var(--container-padding); }
 }
 
 /* ===== Header / Navigation Bar ===== */
+
 .navbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: var(--space-4) var(--container-padding);
-  position: sticky;  /* biar navbar tetap keliatan ketika halaman di scroll */
-  top: 0;             
-  z-index: 10;        
-  background: var(--bg); 
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
 }
 
-.navbar nav {
+.nav-pill {
   display: flex;
-  gap: var(--space-4); 
+  gap: var(--space-2);
+  background: rgba(244, 245, 247, 0.06);
+  border-radius: var(--radius);
+  background-color: var(--card-alt);
+  padding: 12px 24px;
+box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
 }
 
-.logo, .nav-link{
-    font-weight: 400;
+.nav-pill .nav-link {
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  color: var(--unselect);/* nanti tambahin ke variabel kalo ok*/
+  width: 128px;
+  text-align: center;
+  text-decoration: none;
+
 }
-.logo {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
+
+.nav-pill .nav-link:hover {
   color: var(--fg);
   text-decoration: none;
+
 }
 
-.nav-link {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  color: var(--fg);
-  text-decoration: none;
+ .icon-mask {
+  display: block;
+  width: 40px;
+  height: 40px;
+  background-color: #f4f5f7; /* warna default */
+  -webkit-mask-image: var(--icon-url);
+  mask-image: var(--icon-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  transition: background-color 0.2s ease;
 }
 
+.service-card:hover .icon-mask {
+  background-color: #1f2129; /* warna pas hover */
+}
 /* ===== Hero ===== */
-.hero { /* ini kenapa pilih grid dan 1fr 1fr artinya apa */
+.hero { 
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-12);
@@ -386,3 +411,29 @@ section { padding: var(--space-12) var(--container-padding); }
   .hero h1 { font-size: 28px; }
   .bio, .service-card p, .exp-body p { font-size: 15px; }
 }
+
+.empty-state { color: var(--fg-muted); }
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: var(--space-4) 0 0 var(--container-padding);
+  text-decoration: none;
+  position: sticky;
+  top: var(--space-4);
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+/* reuse mask sebelumnya, cuma ganti warna */
+.back-btn .icon-mask {
+  background-color: var(--unselect);
+}
+
+.back-btn:hover .icon-mask {
+  background-color: var(--fg);
+}
+
