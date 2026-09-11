@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>service — {{name}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <header>
+      <a href="{% url 'main:show_main' %}#services" class="back-btn" aria-label="Back to home">
+        <span
+          class="icon-mask"
+          style="--icon-url: url('{% static 'img/back-arrow.png' %}')"
+        ></span>
+      </a>
+    </header>
+
+    <main>
+      <section class="services" id="services">
+        <div class="section-title">
+          <h2>What I bring to the table</h2>
+          <p>
+            A mix of skills I've picked up, from crafting interfaces to writing
+            the code behind them.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          {% for service in service_list %}
+            <article class="service-card">
+            <div class="icon" aria-hidden="true"> 
+              <span 
+              class="icon-mask"
+              style="--icon-url": url('{{service.icon}}')
+            ></span>
+            </div>
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description }}</p>
+        </article>
+        {% empty %}
+            <p class="empty-state">Coming soon!</p>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>
+        © 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas
+        Indonesia.
+      </p>
+    </footer>
+  </body>
+</html>
