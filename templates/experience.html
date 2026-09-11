@@ -26,8 +26,8 @@
     <main>
       <section class="experience" id="experience">
         <div class="section-title">
-          <h2>Where I've Been</h2>
-          <p>A few things I've worked on and learned from along the way.</p>
+          <h2>{{ heading }}</h2>
+          <p>{{ caption }}</p>
         </div>
 
         <div class="experience-list">
@@ -53,7 +53,7 @@
               </div>
             </article>
           {% empty %}
-            <p class="empty-state">Coming soon.</p>
+            <p class="empty-state">Coming soon!</p>
           {% endfor %}
         </div>
       </section>

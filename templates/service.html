@@ -27,10 +27,9 @@
     <main>
       <section class="services" id="services">
         <div class="section-title">
-          <h2>What I bring to the table</h2>
+          <h2>{{ heading }}</h2>
           <p>
-            A mix of skills I've picked up, from crafting interfaces to writing
-            the code behind them.
+            {{ caption }}
           </p>
         </div>
 
@@ -40,7 +39,8 @@
             <div class="icon" aria-hidden="true"> 
               <span 
               class="icon-mask"
-              style="--icon-url": url('{{service.icon}}')
+            style="--icon-url: url('{% static 'service.icon' %}')"
+
             ></span>
             </div>
             <h3>{{ service.title }}</h3>
