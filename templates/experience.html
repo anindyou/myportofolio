@@ -40,11 +40,10 @@
                   <div class="exp-meta">
                     <span>{{ experience.institution }}</span>
                     <span class="exp-date"> <!-- Ganti jadi format 3 huruf bulan dan 2 digit tahun -->
-                      {{ experience.started_at|date:"M y" }} 
                       {% if experience.is_ongoing %}
-                        Sedang berlangsung
+                        On duty
                       {% else %}
-                        - {{ experience.ended_at|date:"M y" }}
+                        {{ experience.started_at|date:"M y" }} - {{ experience.ended_at|date:"M y" }}
                       {% endif %}
                     </span>
                   </div>
