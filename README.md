@@ -40,5 +40,34 @@ link figma: https://www.figma.com/proto/AXqN1DCBqLUiTjETsTN8tg/Untitled?node-id=
 
 Terdapat beberapa penyesuaian yang saya lakukan di Tutorial 2 (tidak mengikuti template sepenuhnya):
 
-- **Menghapus `EXPERIENCE_CHOICES`** — sejak awal desain portofolio ini tidak menggunakan kategori pengalaman, dan diganti dengan field `institution` (nama penyelenggara/instansi) yang dirasa lebih relevan.
+- **Menghapus `EXPERIENCE_CHOICES`** sejak awal desain portofolio ini tidak menggunakan kategori pengalaman, dan diganti dengan field `institution` (nama penyelenggara/instansi) yang dirasa lebih relevan.
 - **Navigation bar di halaman utama** berfungsi untuk _scroll_ ke bagian terkait di halaman yang sama. Halaman baru `experience.html` diakses lewat tombol **"View More"**, bukan lewat item navbar.
+
+### Tugas 2
+
+1. Alur website
+
+Misalnya, ketika pengguna mengakses sebuah URL `/experience`, Django akan mengecek `urls.py` proyek. Karena path-nya kosong (`""`), maka masuk ke `main.url` atau dengan kata lain lanjut ke `urls.py` yang ada di `main`. Di sana, path `experience/` dicocokkan dengan fungsi `show_experience` yang ada di `views.py`.
+
+Di dalam `views.py`, fungsi `show_experience` mengambil data dari model `Experience` melalui `Experience.objects.all()`, lalu memasukkannya ke sebuah `context`. Setelah itu, baru memanggil `render()` untuk menggabungkan data tersebut dengan `experience.html` yang akhirnya dikirim sebagai response dan ditampilkan di browser pengguna. Hal yang sama juga terjadi untuk fitur service.
+
+2. Data portfolio bisa berubah-ubah dan bertambah seiring waktu. Jika data ditulis langsung di template(hardcode), maka setiap kali ada perubahan, developer akan kesusahan untuk mengedit file HTML secara manual dan beresiko mengubah kode yang tidak diinginkan.
+
+Dengan menyimpan data di model, terdapat satu sumber data yang terstruktur dan konsisten. Template melalukan for loop terhadap data tersebut sehingga:
+
+- Penambahan/pengubahan data cukup dilakukan lewat Django Admin tanpa perlu mengakses kode di HTML-nya.
+- Struktur tampilan tiap item akan konsisten karena memiliki patokan yang sama.
+- Kode lebih mudah dikembangkan dan dijaga karena tempat penyimpanan data dan tampilan website dipisah.
+
+3. `makemigrations` melihat perubahan yang diterapkan pada `models.py` dan membuat file migrasi yang berisi perubahan tersebut. Namun, file ini belum diterapkan ke database. Saat kita menjalankan `migrate`, baru perubahan tersebut diimplementasikan ke database.
+
+Contohnya: di awal saya mengikuti template untuk memiliki field `category`, tetapi saya menghapus field ini dan menggantinya dengan field `institution`. Perubahan pada kode di `models.py` ini menyebabkan saya harus menjalankan kedua perintah tersebut untuk menerapkan perubahan skema tersebut ke database.
+
+### Alur Pengerjaan & Penggunaan AI Pada Tugas 2
+
+Perintah tugas 1 kurang lebih sama dengan apa yang saya lakukan di tutorial/tugas sebelumnya. Oleh karena itu, sebagian besar pekerjaan dilakukan dengan menyalin kode yang sudah ada lalu menyesuaikannya dengan kebutuhan baru. Misalnya, karena di tutorial 2 saya sudah membuat halaman `experience`, di tugas 2 saya hanya perlu menyalin kode tersebut (model, views, template, urls) kemudian diganti dengan fields dan elemen-elemen yang ada di `service`. Selain itu, karena saat ini halaman utama (main) dan halaman khusus per section desainnya sama, styling CSS pun juga disalin dan disesuaikan.
+
+Selama pengerjaan tugas, saya menggunakan Claude sebagai alat bantu belajar, debugging, dan diskusi alur website.
+
+- Saya menggunakan AI untuk memahami alur desain navigasi yang baik. Salah satu hasilnya adalah, keputusan membuat navigation bar di halaman utama yang hanya mengarah ke section preview (di halaman yang sama). Akses menuju page `experience.html` dan `service.html` disediakan lewat button `View more` di masing-masing bagian.
+- Membantu bagaimana unit test bekerja dan debugging test yang gagal akibat perubahan model dan konten di template.
