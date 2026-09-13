@@ -39,9 +39,8 @@
             <div class="icon" aria-hidden="true"> 
               <span 
               class="icon-mask"
-            style="--icon-url: url('{% static service.icon %}')"
-
-            ></span>
+              style="--icon-url: url('{% static 'img/'|add:service.icon %}')" 
+              ></span> <!-- |add buat sambung string-->
             </div>
             <h3>{{ service.title }}</h3>
             <p>{{ service.description }}</p>
