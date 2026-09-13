@@ -30,6 +30,9 @@ SECRET_KEY = 'django-insecure-lia844c3@(x#lj2iqc+!vo#by6!j#og3!*^hhzbjk4wp2wmj%&
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "anindya-raihani-myportofolio.pws.cs.ui.ac.id"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://anindya-raihani-myportofolio.pws.cs.ui.ac.id",
+]
 
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 
