@@ -33,11 +33,21 @@ def show_experience(request):
     return render(request, "experience.html", context)
 
 def show_service(request):
+    json_response = get_service_json(request)
+
+    services = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    services = [service.object for service in services]
+    title_query = request.GET.get("title", "").strip() 
+    
     context = {
         "name" : "Anindya Raihani Hassan",
-        "service_list" : Service.objects.all(),
+        "service_list" : services,
         "heading" : "What I bring to the table",
         "caption" : "A mix of skills I've picked up, from crafting interfaces to writing the code behind them.",
+        "title": title_query,
     }
     return render(request, "service.html", context)
 
@@ -54,3 +64,23 @@ def create_service(request):
         "form": form,
     }
     return render(request, "service_form.html", context)
+
+def delete_service(request, service_id):
+    service = get_object_or_404(Service, pk=service_id)
+
+    if request.method == "POST":
+        service.delete()
+        messages.success(request, "Successfully deleted service!")
+        return redirect("main:show_service")
+
+    return redirect("main:show_service")
+
+def get_service_json(request):
+    title_query = request.GET.get("title", "").strip()
+    service = Service.objects.all()
+
+    if title_query:
+        service = service.filter(title__icontains=title_query)
+
+    service_json = serializers.serialize("json", service)
+    return HttpResponse(service_json, content_type="application/json")
