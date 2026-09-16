@@ -1,7 +1,11 @@
 from django.shortcuts import render
 
 from main.models import *
-
+from django.contrib import messages
+from django.core import serializers
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from main.forms import *
 
 def show_main(request):
     context = {
@@ -36,3 +40,17 @@ def show_service(request):
         "caption" : "A mix of skills I've picked up, from crafting interfaces to writing the code behind them.",
     }
     return render(request, "service.html", context)
+
+def create_service(request):
+    form = ServiceForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "New service successfully added!")
+        return redirect("main:show_service")
+
+    context = {
+        "name": "Anin",
+        "form": form,
+    }
+    return render(request, "service_form.html", context)
