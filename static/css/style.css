@@ -189,6 +189,12 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
   text-decoration: none;
   font-size: var(--text-base);
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
 }
 
 .btn:hover {
@@ -240,6 +246,31 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
 }
 
   /* ===== Services ===== */
+  .service-search {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.service-search__input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+}
+
+.service-search__input:focus {
+  outline: 2px solid var(--fg);
+  border-color: var(--fg);
+}
+
   .cards-grid {
     display: flex;
     flex-wrap: wrap;
@@ -455,8 +486,20 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
   font-weight: 700;
 }
 
+.search-bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.search-bar input {
+  flex: 1;
+}
+
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.search-bar input {
   width: 100%;
   box-sizing: border-box;
   padding: 0.7rem;
@@ -480,3 +523,79 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
   margin-top: 0.35rem;
 }
 
+/* ===== Service header (tombol tambah) ===== */
+.service-header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+/* ===== Delete modal (popover) ===== */
+.service-delete-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: var(--space-2);
+  border: 0;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-delete-modal:popover-open {
+  display: flex;
+}
+
+.service-delete-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: rgba(31, 33, 41, 0.65);
+  cursor: default;
+}
+
+.service-delete-modal__content {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 420px);
+  padding: var(--space-3);
+  background: var(--card-alt);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  color: var(--fg);
+}
+
+.service-delete-modal__content h2 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+}
+
+.service-delete-modal__close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.service-delete-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}

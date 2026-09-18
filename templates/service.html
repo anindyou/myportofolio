@@ -1,4 +1,4 @@
-{% extends "base.html" %} <!-- balikin headernya besok-->
+{% extends "base.html" %}
 {% load static %}
 {% block meta %}
     <title>Services — {{ name }}</title>
@@ -14,11 +14,18 @@
         </div>
 
         <div class="service-header">
-          <a href="{% url 'main:create_service' %}" class="btn service-add-button">
-            <span aria-hidden="true">+</span>
-            Tambah Service
+          <a href="{% url 'main:create_service' %}" class="btn">
+            + Tambah Service
           </a>
         </div>
+
+        <form method="get" action="{% url 'main:show_service' %}" class="search-bar">
+            <input type="search"
+                   name="title"
+                   value="{{ title_query }}"
+                   placeholder="Cari berdasarkan nama service">
+            <button type="submit" class="btn">Search</button>
+        </form>
 
         <div class="cards-grid">
           {% for service in service_list %}
@@ -34,7 +41,11 @@
               {% include "components/service_delete_modal.html" with service=service %}
             </article>
           {% empty %}
-            <p class="empty-state">Coming soon!</p>
+            {% if title_query %}
+              <p class="empty-state">Not found.</p>
+            {% else %}
+              <p class="empty-state">Coming soon!</p>
+            {% endif %}
           {% endfor %}
         </div>
       </section>
