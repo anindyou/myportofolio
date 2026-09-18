@@ -5,7 +5,7 @@
 {% block content %}
     <main>
         <section class="service-section">
-                <h1>Add New Service</h1>
+                <h1>{% if form.instance.pk %}Edit Service{% else %}Add New Service{% endif %}</h1>
                 <form method="post"
                       action="{% url 'main:create_service' %}"
                       class="service-form">
@@ -22,7 +22,7 @@
                     <button type="submit" class="btn">Add service</button>
                     <a href="{% url 'main:show_service' %}" class="btn">Cancel</a>
                 </form>
-            
+    
         </section>
     </main>
 {% endblock content %}

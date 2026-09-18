@@ -38,7 +38,12 @@
               </div>
               <h3>{{ service.title }}</h3>
               <p>{{ service.description }}</p>
-              {% include "components/service_delete_modal.html" with service=service %}
+              <div class="service-actions">
+                <a href="{% url 'main:edit_service' service.id %}" class="btn">
+                  Edit
+                </a>
+                {% include "components/service_delete_modal.html" with service=service %}
+              </div>
             </article>
           {% empty %}
             {% if title_query %}

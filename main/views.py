@@ -60,7 +60,7 @@ def create_service(request):
         return redirect("main:show_service")
 
     context = {
-        "name": "Anin",
+        "name": "Anindya Raihani Hassan",
         "form": form,
     }
     return render(request, "service_form.html", context)
@@ -84,3 +84,18 @@ def get_service_json(request):
 
     service_json = serializers.serialize("json", service)
     return HttpResponse(service_json, content_type="application/json")
+
+def edit_service(request, service_id):
+    service = get_object_or_404(Service, pk=service_id)
+    form = ServiceForm(request.POST or None, instance=service)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Service successfully updated!")
+        return redirect("main:show_service")
+
+    context = {
+        "name": "Anindya Raihani Hassan",
+        "form": form,
+    }
+    return render(request, "service_form.html", context)    

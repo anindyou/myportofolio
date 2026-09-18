@@ -140,9 +140,6 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
   transition: background-color 0.2s ease;
 }
 
-.service-card:hover .icon-mask {
-  background-color: #1f2129; /* warna pas hover */
-}
 /* ===== Hero ===== */
 .hero { 
   display: grid;
@@ -246,30 +243,6 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
 }
 
   /* ===== Services ===== */
-  .service-search {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.service-search__input {
-  width: 100%;
-  min-width: 0;
-  padding: 0.7rem;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
-}
-
-.service-search__input:focus {
-  outline: 2px solid var(--fg);
-  border-color: var(--fg);
-}
 
   .cards-grid {
     display: flex;
@@ -288,9 +261,8 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
     text-align: center;
     justify-content: center; 
     gap: var(--space-2);
-    transition: border-color 0.2s ease, transform 0.2s ease;
     width: 320px; /* fix weight and height */
-    height: 320px;
+    height: 360px;
     transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
   }
 
@@ -317,23 +289,12 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
     font-size: var(--text-md);
   }
 
-  .service-card p { font-size: var(--text-base); }
+  .service-card p { font-size: var(--text-base); }  
 
-  /* Ketika dihover, pake masking supaya gambar icon bisa berubah warna (putih/hitam)*/
-  .icon-mask {
-  display: block;
-  width: 40px;
-  height: 40px;
-  background-color: #f4f5f7; /* warna default */
-  -webkit-mask-image: var(--icon-url);
-  mask-image: var(--icon-url);
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  transition: background-color 0.2s ease;
+.service-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .service-card:hover .icon-mask {
@@ -513,8 +474,8 @@ box-shadow: 0 20px 30px 0 rgba(21, 23, 37, 0.75);
 
 .form-group input:focus,
 .form-group textarea:focus {
-  outline: 2px solid var(--accent);
-  border-color: var(--accent);
+  outline: 2px solid var(--fg);
+  border-color: var(--fg);
 }
 
 .form-error {
