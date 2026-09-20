@@ -14,8 +14,8 @@
         </div>
 
         <div class="service-header">
-          <a href="{% url 'main:create_service' %}" class="btn">
-            + Tambah Service
+          <a href="{% url 'main:create_service' %}" class="btn btn--solid">
+            + Add Service
           </a>
         </div>
 
@@ -23,7 +23,7 @@
             <input type="search"
                    name="title"
                    value="{{ title_query }}"
-                   placeholder="Cari berdasarkan nama service">
+                   placeholder="Search by service name">
             <button type="submit" class="btn">Search</button>
         </form>
 
@@ -42,9 +42,16 @@
                 <a href="{% url 'main:edit_service' service.id %}" class="btn">
                   Edit
                 </a>
-                {% include "components/service_delete_modal.html" with service=service %}
+                <button type="button"
+                        class="btn"
+                        popovertarget="delete-service-{{ service.id }}"
+                        aria-label="Delete {{ service.title }}"
+                        title="Delete service">
+                    Delete
+                </button>
               </div>
             </article>
+            {% include "components/service_delete_modal.html" with service=service %}
           {% empty %}
             {% if title_query %}
               <p class="empty-state">Not found.</p>

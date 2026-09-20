@@ -62,6 +62,7 @@ def create_service(request):
     context = {
         "name": "Anindya Raihani Hassan",
         "form": form,
+        "is_edit": False,
     }
     return render(request, "service_form.html", context)
 
@@ -97,5 +98,6 @@ def edit_service(request, service_id):
     context = {
         "name": "Anindya Raihani Hassan",
         "form": form,
+        "is_edit": True,
     }
     return render(request, "service_form.html", context)    

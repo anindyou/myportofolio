@@ -1,10 +1,3 @@
-<button type="button"
-        class="btn"
-        popovertarget="delete-service-{{ service.id }}"
-        aria-label="Hapus {{ service.title }}"
-        title="Hapus service">
-    Hapus
-</button>
 <div id="delete-service-{{ service.id }}"
      class="service-delete-modal"
      popover="auto"
@@ -15,26 +8,26 @@
             class="service-delete-modal__backdrop"
             popovertarget="delete-service-{{ service.id }}"
             popovertargetaction="hide"
-            aria-label="Tutup konfirmasi hapus"></button>
+            aria-label="Close delete confirmation"></button>
     <div class="service-delete-modal__content">
         <button type="button"
                 class="service-delete-modal__close"
                 popovertarget="delete-service-{{ service.id }}"
                 popovertargetaction="hide"
-                aria-label="Tutup konfirmasi hapus">×</button>
-        <h2 id="delete-service-title-{{ service.id }}">Hapus Service?</h2>
+                aria-label="Close delete confirmation">×</button>
+        <h2 id="delete-service-title-{{ service.id }}">Delete Service?</h2>
         <p>
-            Apakah Anda yakin ingin menghapus
+            Are you sure you want to delete
             <strong>{{ service.title }}</strong>?
         </p>
         <div class="service-delete-modal__actions">
             <button type="button"
                     class="btn"
                     popovertarget="delete-service-{{ service.id }}"
-                    popovertargetaction="hide">Batal</button>
+                    popovertargetaction="hide">Cancel</button>
             <form method="post" action="{% url 'main:delete_service' service.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn">Ya, Hapus</button>
+                <button type="submit" class="btn">Yes, Delete</button>
             </form>
         </div>
     </div>
