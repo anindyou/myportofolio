@@ -231,11 +231,11 @@ section { padding: var(--space-12) var(--container-padding); }
 
 /* hover di parent, terus masing2 kartu gerak sesuai transform korespondensinya */
 .photo-stack:hover .stack-card--back {
-  transform: translate(-80%, -48%) rotate(-14deg);
+  transform: translate(-75%, -58%) rotate(-12deg);
 }
 
 .photo-stack:hover .stack-card--mid {
-  transform: translate(-20%, -45%) rotate(10deg);
+  transform: translate(-30%, -30%) rotate(11deg);
 }
 
 .photo-stack:hover .stack-card--front{
@@ -306,6 +306,7 @@ section { padding: var(--space-12) var(--container-padding); }
 
 .service-actions .btn:hover{
   background-color: #28292a;
+  color: var(--fg);
 }
 
 .service-card:hover .icon-mask {
@@ -477,7 +478,7 @@ section { padding: var(--space-12) var(--container-padding); }
   box-sizing: border-box;
   padding: 0.7rem;
   border: 1px solid var(--card-border);
-  border-radius: var(--radius);
+  border-radius: 24px;
   font: inherit;
   background: transparent;
   color: var(--fg);

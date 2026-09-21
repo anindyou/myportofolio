@@ -56,7 +56,7 @@ def create_service(request):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "New service successfully added!")
+        messages.success(request, "New service added successfully!")
         return redirect("main:show_service")
 
     context = {
