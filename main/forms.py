@@ -1,6 +1,6 @@
-from django.forms import ModelForm, TextInput, Textarea, URLInput
+from django.forms import ModelForm, TextInput, Textarea, DateInput
 
-from main.models import Service
+from main.models import Service, Experience
 
 class ServiceForm(ModelForm):
     class Meta:
@@ -20,7 +20,7 @@ class ServiceForm(ModelForm):
         widgets = {
             "title": TextInput(
                 attrs={
-                    "placeholder": "Portfolio Website",
+                    "placeholder": "Service name",
                     "maxlength": 255,
                 }
             ),
@@ -32,8 +32,58 @@ class ServiceForm(ModelForm):
             ),
             "icon": TextInput(
                         attrs={
-                            "placeholder": "ga-tau.png",
+                            "placeholder": "xx-xx.png",
                             "maxlength": 255,
+                        }
+            ),
+        }
+
+class ExperienceForm(ModelForm):
+    class Meta:
+        model = Experience
+        fields = [
+            "title",
+            "description",
+            "institution",
+            "started_at",
+            "ended_at",
+        ]
+
+        labels = {
+            "title": "Experience name",
+            "description": "Experience description",
+            "institution": "Place",
+            "started_at": "Start date",
+            "ended_at": "End date",
+        }
+
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Experience name",
+                    "maxlength": 255,
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Describe your experience",
+                    "rows": 3,
+                }
+            ),
+            "institution": TextInput(
+                        attrs={
+                            "placeholder": "Who accomodate this idk",
+                            "maxlength": 255,
+                        }
+            ),
+            "started_at": DateInput(
+                        attrs={
+                            "type": "date",
+                        }
+            ),
+            "ended_at": DateInput(
+                        attrs={
+                            "type": "date",
                         }
             ),
         }

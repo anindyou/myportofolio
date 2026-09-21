@@ -10,6 +10,20 @@
           <p>{{ caption }}</p>
         </div>
 
+         <div class="service-header"> <!--nama class samain aja dulu? kalo harus ubah nanti dulu deh-->
+          <a href="{% url 'main:create_experience' %}" class="btn"> <!-- kok btn btn? -->
+            + Add Experience
+          </a>
+        </div>
+
+        <form method="get" action="{% url 'main:show_experience' %}" class="search-bar">
+            <input type="search"
+                   name="title"
+                   value="{{ title_query }}"
+                   placeholder="Search by experience name">
+            <button type="submit" class="btn">Search</button>
+        </form>
+
         <div class="experience-list">
           {% for experience in experience_list %}
             <article class="experience-card">
@@ -30,9 +44,26 @@
                 </div>
                 <p>{{ experience.description }}</p>
               </div>
+              <div class="service-actions">
+                <a href="{% url 'main:edit_experience' experience.id %}" class="btn">
+                  Edit
+                </a>
+                <button type="button"
+                        class="btn"
+                        popovertarget="delete-experience-{{ experience.id }}"
+                        aria-label="Delete {{ experience.title }}"
+                        title="Delete experience">
+                    Delete
+                </button>
+              </div>
             </article>
+            {% include "components/experience_delete_modal.html" with experience=experience %}
           {% empty %}
-            <p class="empty-state">Coming soon!</p>
+            {% if title_query %}
+              <p class="empty-state">Not found.</p>
+            {% else %}
+              <p class="empty-state">Coming soon!</p>
+            {% endif %}
           {% endfor %}
         </div>
       </section>

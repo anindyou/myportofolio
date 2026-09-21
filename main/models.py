@@ -7,7 +7,6 @@ class Experience(models.Model):
     title = models.CharField(max_length=255)
     institution = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField()
-    thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateField()
     ended_at = models.DateField(blank=True, null=True)
     def __str__(self):

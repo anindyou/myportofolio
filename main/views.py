@@ -22,15 +22,79 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
+# ====================================== Experience ======================================
 
 def show_experience(request):
+    json_response = get_experience_json(request)
+    
+    experiences = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    experiences = [experience.object for experience in experiences]
+    title_query = request.GET.get("title", "").strip() 
+        
     context = {
         "name": "Anindya Raihani Hassan",
-        "experience_list": Experience.objects.all(),
+        "experience_list": experiences,
         "heading" : "Where I've Been",
         "caption" : "A few things I've worked on and learned from along the way.",
+        "title_query": title_query,
     }
     return render(request, "experience.html", context)
+
+def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experience = Experience.objects.all()
+
+    if title_query:
+        experience = experience.filter(title__icontains=title_query)
+
+    experience_json = serializers.serialize("json", experience)
+    return HttpResponse(experience_json, content_type="application/json")
+
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "New experience added successfully!")
+        return redirect("main:show_experience")
+
+    context = {
+        "name": "Anindya Raihani Hassan",
+        "form": form,
+        "is_edit": False,
+    }
+    return render(request, "experience_form.html", context)
+
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+
+    if request.method == "POST":
+        experience.delete()
+        messages.success(request, "Successfully deleted experience!")
+        return redirect("main:show_experience")
+
+    return redirect("main:show_experience")
+
+def edit_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST or None, instance=experience)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Experience successfully updated!")
+        return redirect("main:show_experience")
+
+    context = {
+        "name": "Anindya Raihani Hassan",
+        "form": form,
+        "is_edit": True,
+    }
+    return render(request, "experience_form.html", context)  
+
+# ====================================== Service ======================================
 
 def show_service(request):
     json_response = get_service_json(request)
