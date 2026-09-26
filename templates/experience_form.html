@@ -7,7 +7,7 @@
         <section class="service-section">
                 <h1>{% if is_edit %}Edit Experience{% else %}Add New Experience{% endif %}</h1>
                 <form method="post"
-                    action="{% if is_edit %}{% url 'main:edit_experience' form.instance.id %}{% else %}{% url 'main:create_experience' %}{% endif %}"
+                    action="{% if is_edit %}{% url 'main:edit_experience' experience.id %}{% else %}{% url 'main:create_experience' %}{% endif %}"
                     class="service-form">
                     {% csrf_token %}
                     {% for field in form %}

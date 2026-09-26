@@ -18,4 +18,8 @@ urlpatterns = [
     path("api/service/", get_service_json, name="get_service_json"),
     path("service/<uuid:service_id>/delete/",delete_service, name="delete_service"),
     path("service/<uuid:service_id>/edit/", edit_service, name="edit_service"),
+
+    path("register/", register, name="register"),
+    path("login/", login_user, name="login"),
+    path("logout/", logout_user, name="logout"),
 ]
