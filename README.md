@@ -81,3 +81,25 @@ Selama pengerjaan tugas, saya menggunakan Claude sebagai alat bantu belajar, deb
 2. JSON lebih disukai dibandingkan XML dalam pengembangan aplikasi web modern karena beberapa alasan. Pertama, JSON memiliki struktur yang lebih ringkas (tanpa closing tag yang berulang seperti XML), sehingga ukuran datanya lebih kecil. Kedua, JSON dapat langsung di-parse menjadi objek JavaScript tanpa proses parsing tambahan, sehingga lebih efisien digunakan pada aplikasi web yang berjalan di browser. Ketiga, hampir seluruh bahasa pemrograman modern (termasuk Python melalui modul `json`) memiliki dukungan bawaan untuk membaca dan menulis JSON, membuatnya menjadi format pertukaran data yang lebih universal dan mudah diintegrasikan dibandingkan XML yang cenderung lebih kompleks.
 
 3. Pertama, _view_ mengambil data dari database melalui Django ORM (`Service.objects.all()`), yang hasilnya berisi objek-objek Python. Objek-objek ini tidak bisa langsung dikirim sebagai response HTTP karena format aslinya adalah objek Python, bukan teks. Oleh karena itu, dilakukan proses _serialization_ menggunakan `serializers.serialize("json", ...)`, yang mengubah setiap objek model menjadi representasi teks dalam format JSON (memuat nama model, primary key, dan nilai setiap field). Hasil serialisasi ini kemudian dikembalikan sebagai `HttpResponse` dengan `content_type="application/json"`. Pada `show_service`, teks JSON ini kemudian diambil kembali dan diubah balik menjadi objek Python melalui `serializers.deserialize`, sehingga datanya dapat diproses dan ditampilkan kembali di template menggunakan sintaks seperti `{{ service.title }}`.
+
+### Tugas 4
+
+Log Chat AI: https://claude.ai/share/8dac07a3-20c6-4a4e-b368-f13e1e24648d
+
+#### Apa saja yang dikerjakan:
+
+Menerapkan manajemen authorization, menambahkan peran editor via Django Admin, membatasi hak akses sesuai 4 role yang ada, menambah fitur `starred_by`, mengedit JSON supaya tetap sesuai ketentuan, dan menyesuaikan styling css untuk fitur-fitur baru yang ditambahkan
+
+#### Penggunaan AI:
+
+Untuk penerapan authentication, authorization, dan cookies di Django, saya berpatokan pada tutorial 4. Saya menggunakan generative AI (Claude) untuk membantu membuat fitur `starred_by` dan memahami tujuan di tugas 4 seperti membuat role editor, menambahkannya melalui admin, dan membantu debugging styling di css. Selain itu, supaya hasil yang diberikan AI sesuai kebutuhan, saya meminta AI untuk mengonfirmasi pemahamannya terlebih dahulu sebelum memberi solusi. Jika terdapat kekurangan informasi, maka saya bisa memberi konteks tambahan (ex: potongan kode, preferensi pribadi). Jika
+
+## Bagian yang dibantu AI
+
+1. Implementasi role editor menggunakan objek bawaan { perms }
+2. Debugging masalah pada UI
+
+## Keterbatasan AI
+
+1. Beberapa saran AI tidak saya pakai, misalnya cara menyembunyikan tombol add/edit/delete dari role tertentu. Setelah saya coba tulis sendiri langsung di HTML, ternyata cara tersebut sudah cukup berjalan dengan baik, sehingga saya tidak jadi memakai saran AI.
+2. Meski sudah saya minta untuk tidak membuat asumsi, AI kadang tetap memberi asumsi yang kurang sesuai karena kurangnya konteks yang saya berikan. Misalnya, saat membuat role admin, AI berasumsi editor juga bisa melakukan add/delete, padahal seharusnya editor hanya memiliki izin `can_change_service`. Karena itu, saya hanya mengambil bagian saran yang relevan dan menyesuaikan sisanya secara manual.
