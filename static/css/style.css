@@ -310,8 +310,28 @@ section { padding: var(--space-12) var(--container-padding); }
   color: var(--fg);
 }
 
-.service-card:hover .icon-mask {
+.service-card:hover .icon .icon-mask {
   background-color: var(--bg); /* warna pas hover */
+}
+
+.service-actions:hover .btn:hover .icon-mask.cta {
+  background-color: var(--fg);
+}
+
+.service-actions .btn.btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-actions .icon-mask {
+  width: 24px;
+  height: 24px;
+  background-color: var(--fg-muted);
 }
 
 /* ===== Experience ===== */

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block meta %}
     <title>Experience — {{ name }}</title>
 {% endblock meta %}
@@ -47,17 +48,23 @@
               </div>
               <div class="service-actions">
                 {%if perms.main.change_experience %}
-                <a href="{% url 'main:edit_experience' experience.id %}" class="btn">
-                  Edit
+                <a href="{% url 'main:edit_experience' experience.id %}" class="btn btn-circle">
+                  <span class="icon-mask cta"
+                      style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
+                      aria-hidden="true">
+                </span>
                 </a>
                 {% endif %}
                 {%if user.is_superuser %}
                 <button type="button"
-                        class="btn"
+                        class="btn btn-circle"
                         popovertarget="delete-experience-{{ experience.id }}"
                         aria-label="Delete {{ experience.title }}"
                         title="Delete experience">
-                    Delete
+                    <span class="icon-mask cta"
+                      style="--icon-url: url('{% static 'img/delete-icon.png' %}')"
+                      aria-hidden="true">
+                </span>
                 </button>
                 {% endif %}
               </div>

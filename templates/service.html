@@ -42,17 +42,23 @@
               <p>{{ service.description }}</p>
               <div class="service-actions">
                 {%if perms.main.change_service %}
-                <a href="{% url 'main:edit_service' service.id %}" class="btn">
-                  Edit
+                <a href="{% url 'main:edit_service' service.id %}" class="btn btn-circle">
+                  <span class="icon-mask cta"
+                      style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
+                      aria-hidden="true">
+                </span>
                 </a>
                 {% endif %}
                 {%if user.is_superuser %}
                 <button type="button"
-                        class="btn"
+                        class="btn btn-circle"
                         popovertarget="delete-service-{{ service.id }}"
                         aria-label="Delete {{ service.title }}"
                         title="Delete service">
-                    Delete
+                     <span class="icon-mask cta"
+                      style="--icon-url: url('{% static 'img/delete-icon.png' %}')"
+                      aria-hidden="true">
+                    </span>
                 </button>
                 {% endif %}
                 <form method="post" action="{% url 'main:toggle_star' service.id %}" class="star-form">
