@@ -6,13 +6,16 @@ from main.forms import *
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 from django.core import serializers
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 import datetime
+
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'No login session / Cookie not found')
@@ -95,6 +98,8 @@ def delete_experience(request, experience_id):
 
     return redirect("main:show_experience")
 
+@login_required(login_url="/login/")
+@permission_required('main.change_experience', raise_exception=True)
 def edit_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST or None, instance=experience)
@@ -176,10 +181,11 @@ def get_service_json(request):
     service_json = serializers.serialize("json", service, use_natural_foreign_keys=True)
     return HttpResponse(service_json, content_type="application/json")
 
+@login_required(login_url="/login/")
+@permission_required('main.change_service', raise_exception=True)
 def edit_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     form = ServiceForm(request.POST or None, instance=service)
-
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Service successfully updated!")

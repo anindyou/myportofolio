@@ -593,9 +593,7 @@ section { padding: var(--space-12) var(--container-padding); }
 }
 
 .star-form .btn.is-starred {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
+  color: #f5c518;
 }
 
 .star-count {

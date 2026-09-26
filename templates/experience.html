@@ -45,11 +45,13 @@
                 </div>
                 <p>{{ experience.description }}</p>
               </div>
-              {%if user.is_superuser %}
               <div class="service-actions">
+                {%if perms.main.change_experience %}
                 <a href="{% url 'main:edit_experience' experience.id %}" class="btn">
                   Edit
                 </a>
+                {% endif %}
+                {%if user.is_superuser %}
                 <button type="button"
                         class="btn"
                         popovertarget="delete-experience-{{ experience.id }}"
@@ -57,8 +59,8 @@
                         title="Delete experience">
                     Delete
                 </button>
+                {% endif %}
               </div>
-              {% endif %}
             </article>
             {% if user.is_superuser %}
               {% include "components/experience_delete_modal.html" with experience=experience %}
