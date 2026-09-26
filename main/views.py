@@ -6,11 +6,16 @@ from main.forms import *
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required
+
 from django.core import serializers
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+import datetime
 
 def show_main(request):
+    last_login = request.COOKIES.get('last_login', 'No login session / Cookie not found')
     context = {
         "name": "Anindya Raihani Hassan",
         "npm": "2506553295",
@@ -22,6 +27,7 @@ def show_main(request):
             "fully shipped projects."
         ),
         "short_info" : "Computer Science @ Universitas Indonesia",
+        "last_login": last_login
     }
     return render(request, "index.html", context)
 
@@ -56,7 +62,11 @@ def get_experience_json(request):
     experience_json = serializers.serialize("json", experience)
     return HttpResponse(experience_json, content_type="application/json")
 
+@login_required(login_url="/login/")
 def create_experience(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     form = ExperienceForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -71,7 +81,11 @@ def create_experience(request):
     }
     return render(request, "experience_form.html", context)
 
+@login_required(login_url="/login/")
 def delete_experience(request, experience_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     experience = get_object_or_404(Experience, pk=experience_id)
 
     if request.method == "POST":
@@ -119,7 +133,11 @@ def show_service(request):
     }
     return render(request, "service.html", context)
 
+@login_required(login_url="/login/")
 def create_service(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     form = ServiceForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -134,7 +152,11 @@ def create_service(request):
     }
     return render(request, "service_form.html", context)
 
+@login_required(login_url="/login/")
 def delete_service(request, service_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     service = get_object_or_404(Service, pk=service_id)
 
     if request.method == "POST":
@@ -151,7 +173,7 @@ def get_service_json(request):
     if title_query:
         service = service.filter(title__icontains=title_query)
 
-    service_json = serializers.serialize("json", service)
+    service_json = serializers.serialize("json", service, use_natural_foreign_keys=True)
     return HttpResponse(service_json, content_type="application/json")
 
 def edit_service(request, service_id):
@@ -170,6 +192,20 @@ def edit_service(request, service_id):
         "service": service,
     }
     return render(request, "service_form.html", context)    
+
+@login_required(login_url="/login/")
+def toggle_star(request, service_id):
+    service = get_object_or_404(Service, pk=service_id)
+
+    if request.method == "POST":
+        if request.user in service.starred_by.all():
+            service.starred_by.remove(request.user)
+        else:
+            service.starred_by.add(request.user)
+
+    return redirect("main:show_service")
+
+
 
 # ====================================== Authentication ======================================
 def register(request):
@@ -191,8 +227,11 @@ def login_user(request):
     form = AuthenticationForm(request, data=request.POST or None)
 
     if request.method == "POST" and form.is_valid():
-        login(request, form.get_user())
-        return redirect("main:show_main")
+        user = form.get_user()
+        login(request, user)
+        response = redirect("main:show_main")
+        response.set_cookie('last_login', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return response
 
     context = {
         "name": "Anindya Raihani Hassan",
@@ -203,4 +242,6 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect("main:show_main")
+    response = redirect("main:show_main")
+    response.delete_cookie('last_login')
+    return response

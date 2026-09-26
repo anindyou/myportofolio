@@ -13,11 +13,13 @@
           </p>
         </div>
 
+        {% if user.is_superuser %}
         <div class="service-header">
           <a href="{% url 'main:create_service' %}" class="btn">
             + Add Service
           </a>
         </div>
+        {% endif %}
 
         <form method="get" action="{% url 'main:show_service' %}" class="search-bar">
             <input type="search"
@@ -39,6 +41,7 @@
               <h3>{{ service.title }}</h3>
               <p>{{ service.description }}</p>
               <div class="service-actions">
+                {%if user.is_superuser %}
                 <a href="{% url 'main:edit_service' service.id %}" class="btn">
                   Edit
                 </a>
@@ -49,9 +52,23 @@
                         title="Delete service">
                     Delete
                 </button>
+                {% endif %}
+                <form method="post" action="{% url 'main:toggle_star' service.id %}" class="star-form">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="btn {% if user in service.starred_by.all %} is-starred{% endif %}"
+                          title="{% if service.starred_by.all %}Starred by {{ service.starred_by.all|join:', ' }}{% else %}Be the first to give star!{% endif %}">
+                      <span aria-hidden="true">★</span>
+                      {% if user in service.starred_by.all %}Unstar{% else %}Star{% endif %}
+                      <span class="star-count">{{ service.starred_by.count }}</span>
+                  </button>
+                </form>
               </div>
             </article>
-            {% include "components/service_delete_modal.html" with service=service %}
+            {% include "components/service_star.html" with service=service %}
+            {% if user.is_superuser %}
+              {% include "components/service_delete_modal.html" with service=service %}
+            {% endif %}
           {% empty %}
             {% if title_query %}
               <p class="empty-state">Not found.</p>

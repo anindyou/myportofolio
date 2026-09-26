@@ -579,3 +579,25 @@ section { padding: var(--space-12) var(--container-padding); }
   gap: var(--space-2);
   margin-top: var(--space-3);
 }
+
+/* Star */
+.star-form {
+  display: inline-flex;
+}
+
+.star-form .btn {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-form .btn.is-starred {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+.star-count {
+  font-size: 0.85rem;
+}
