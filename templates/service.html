@@ -182,7 +182,7 @@
     articleElement.innerHTML = completeCardHtml;
     return articleElement;
   }
-  function closeSericeModal() {
+  function closeServiceModal() {
     document.getElementById("add-service-modal").hidePopover();
   }
   // Fetch data service
@@ -239,6 +239,63 @@
       clearTimeout(searchDebounceTimer);
       searchServices();
   });
+
+  const CREATE_SERVICE_ENDPOINT = "{% url 'main:create_service_ajax' %}";
+  const serviceForm = document.getElementById('service-form');
+
+// Membaca nilai cookie, digunakan untuk mengambil token CSRF
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  // Mengirim data form ke server
+  async function addService(event) {
+      event.preventDefault();
+
+      const submitButton = serviceForm.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+
+      try {
+          const response = await fetch(CREATE_SERVICE_ENDPOINT, {
+              method: 'POST',
+              headers: { 'X-CSRFToken': getCookie('csrftoken') },
+              body: new FormData(serviceForm),
+          });
+          const result = await response.json().catch(() => ({}));
+
+          if (response.ok) {
+              serviceForm.reset();
+              closeServiceModal();
+              showToast('Success', 'New service added successfully!', 'success');
+              fetchServices(searchInput.value.trim());
+          } else {
+              const errorMessages = result.errors
+                  ? Object.values(result.errors).flat().map(error => error.message)
+                  : [result.message || `A mistake occured (status ${response.status}).`];
+              showToast('Failed to add service', errorMessages.join(' '), 'error');
+          }
+      } catch (error) {
+          console.error('Error adding service:', error);
+          showToast('Failed to add service', "Can't connect to the server. Please try again.", 'error');
+      } finally {
+          submitButton.disabled = false;
+      }
+  }
+
+  if (serviceForm) {
+      serviceForm.addEventListener('submit', addService);
+  }
 
   // Start application
   fetchServices(searchInput.value.trim());

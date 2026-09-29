@@ -17,6 +17,7 @@ import datetime
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
+from django.views.decorators.http import require_POST
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'No login session / Cookie not found')
     context = {
@@ -131,6 +132,23 @@ def show_service(request):
     }
     return render(request, "service.html", context)
 
+@require_POST
+def create_service_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Only owner can add service."},
+            status=403,
+        )
+
+    form = ServiceForm(request.POST)
+    if form.is_valid():
+        service = form.save()
+        return JsonResponse(
+            {"message": "New service added successfully!", "pk": str(service.id)},
+            status=201,
+        )
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+    
 @login_required(login_url="/login/")
 def create_service(request):
     if not request.user.is_superuser:
