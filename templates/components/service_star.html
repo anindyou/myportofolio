@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'main:toggle_star' service.id %}" class="star-form">
+{% csrf_token %}
+<button type="submit"
+        class="btn {% if user in service.starred_by.all %} is-starred{% endif %}"
+        title="{% if service.starred_by.all %}Starred by {{ service.starred_by.all|join:', ' }}{% else %}Be the first to give star!{% endif %}">
+    <span aria-hidden="true">★</span>
+    {% if user in service.starred_by.all %}Unstar{% else %}Star{% endif %}
+    <span class="star-count">{{ service.starred_by.count }}</span>
+</button>
+</form>
