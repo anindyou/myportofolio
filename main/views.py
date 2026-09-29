@@ -127,6 +127,7 @@ def show_service(request):
         "heading" : "What I bring to the table",
         "caption" : "A mix of skills I've picked up, from crafting interfaces to writing the code behind them.",
         "title_query": title_query,
+        "form": ServiceForm(),
     }
     return render(request, "service.html", context)
 

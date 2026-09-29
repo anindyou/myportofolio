@@ -15,9 +15,12 @@
 
       {% if user.is_superuser %}
       <div class="service-header">
-        <a href="{% url 'main:create_service' %}" class="btn">
-          + Add Service
-        </a>
+        <button type="button"
+                class="btn"
+                popovertarget="add-service-modal">
+            <span aria-hidden="true">+</span>
+            Add Service
+        </button>
         <button class="btn" onclick="showToast('Notifikasi Sistem', 'Service berhasil dimuat dengan baik!', 'success')">
             Test Toast Notifikasi
         </button>
@@ -42,7 +45,9 @@
 
     </section>
   </main>
-  
+  {% if user.is_superuser %}
+    {% include "components/service_form_modal.html" %}
+  {% endif %}
   <script>
   // Konfigurasi
   const BASE_SERVICES_ENDPOINT = "{% url 'main:get_service_json' %}";
@@ -177,7 +182,9 @@
     articleElement.innerHTML = completeCardHtml;
     return articleElement;
   }
-
+  function closeSericeModal() {
+    document.getElementById("add-service-modal").hidePopover();
+  }
   // Fetch data service
   async function fetchServices(searchQuery = "") {
       if (servicesAbortController) servicesAbortController.abort();
