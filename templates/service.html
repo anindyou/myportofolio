@@ -4,87 +4,219 @@
     <title>Services — {{ name }}</title>
 {% endblock meta %}
 {% block content %}
-    <main>
-      <section class="services" id="services">
-        <div class="section-title">
-          <h2>{{ heading }}</h2>
-          <p>
-            {{ caption }}
-          </p>
-        </div>
+  <main>
+    <section class="services" id="services">
+      <div class="section-title">
+        <h2>{{ heading }}</h2>
+        <p>
+          {{ caption }}
+        </p>
+      </div>
 
-        {% if user.is_superuser %}
-        <div class="service-header">
-          <a href="{% url 'main:create_service' %}" class="btn">
-            + Add Service
-          </a>
-        </div>
-        {% endif %}
+      {% if user.is_superuser %}
+      <div class="service-header">
+        <a href="{% url 'main:create_service' %}" class="btn">
+          + Add Service
+        </a>
+        <button class="btn" onclick="showToast('Notifikasi Sistem', 'Service berhasil dimuat dengan baik!', 'success')">
+            Test Toast Notifikasi
+        </button>
+      </div>
+      {% endif %}
 
-        <form method="get" action="{% url 'main:show_service' %}" class="search-bar">
-            <input type="search"
-                   name="title"
-                   value="{{ title_query }}"
-                   placeholder="Search by service name">
-            <button type="submit" class="btn">Search</button>
-        </form>
+      <form id="service-search-form" class="search-bar">
+          <input type="search"
+                  id="search-input"
+                  name="title"
+                  value="{{ title_query }}"
+                  placeholder="Search by service name"
+                  class="service-search__input"
+          >
+          <button type="submit" class="btn">Search</button>
+      </form>
 
-        <div class="cards-grid">
-          {% for service in service_list %}
-            <article class="service-card">
-              <div class="icon" aria-hidden="true">
-                <span
-                  class="icon-mask"
-                  style="--icon-url: url('{% static 'img/'|add:service.icon %}')"
-                ></span> <!-- |add buat sambung string-->
+      <div id="loading" class="empty-state hide">Loading...</div>
+      <div id="error" class="empty-state hide">Failed to load services. Please try again.</div>
+      <div id="empty" class="empty-state hide"></div> <!-- Text empty di isi dari JS supaya konsisten dengan design sebelumnya-->
+      <div id="grid" class="cards-grid hide"></div>
+
+    </section>
+  </main>
+  
+  <script>
+  // Konfigurasi
+  const BASE_SERVICES_ENDPOINT = "{% url 'main:get_service_json' %}";
+  const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+  const CAN_EDIT = "{{ perms.main.change_service|yesno:'true,false' }}" === "true";
+  let servicesAbortController;
+
+  // Elemen DOM
+  const loadingState = document.getElementById('loading');
+  const errorState = document.getElementById('error');
+  const emptyState = document.getElementById('empty');
+  const gridContainer = document.getElementById('grid');
+  const searchForm = document.getElementById('service-search-form');
+  const searchInput = document.getElementById('search-input');
+
+  // Menyembunyikan/Menampilkan section halaman
+  function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+      loadingState.classList.toggle('hide', !showLoading);
+      errorState.classList.toggle('hide', !showError);
+      emptyState.classList.toggle('hide', !showEmpty);
+      gridContainer.classList.toggle('hide', !showGrid);
+  }
+
+  // Membuat elemen card service
+  function buildServiceCardElement(item) {
+    const service = item.fields;
+    const serviceId = item.pk;
+
+    const articleElement = document.createElement('article');
+    articleElement.className = 'service-card';
+
+    // Dummy UUID digunakan untuk digantikan oleh ID asli dari data JSON
+    const editUrl = "{% url 'main:edit_service' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', serviceId);
+    const deleteUrl = "{% url 'main:delete_service' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', serviceId);
+    const starUrl = "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', serviceId);
+
+    const editHtml = CAN_EDIT
+        ? `<a href="${editUrl}" class="btn btn-circle">
+              <span class="icon-mask cta"
+                    style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
+                    aria-hidden="true"></span>
+            </a>`
+        : '';
+
+    const deleteButtonHtml = IS_SUPERUSER
+        ? `<button type="button"
+                    class="btn btn-circle"
+                    popovertarget="delete-service-${serviceId}"
+                    aria-label="Delete ${service.title}"
+                    title="Delete service">
+              <span class="icon-mask cta"
+                    style="--icon-url: url('{% static 'img/delete-icon.png' %}')"
+                    aria-hidden="true"></span>
+            </button>`
+        : '';
+
+    const deleteModalHtml = IS_SUPERUSER
+        ? `<div id="delete-service-${serviceId}"
+                class="service-delete-modal"
+                popover="auto"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-service-title-${serviceId}">
+              <button type="button"
+                      class="service-delete-modal__backdrop"
+                      popovertarget="delete-service-${serviceId}"
+                      popovertargetaction="hide"
+                      aria-label="Close delete confirmation"></button>
+              <div class="service-delete-modal__content">
+                  <button type="button"
+                          class="service-delete-modal__close"
+                          popovertarget="delete-service-${serviceId}"
+                          popovertargetaction="hide"
+                          aria-label="Close delete confirmation">×</button>
+                  <h2 id="delete-service-title-${serviceId}">Delete Service?</h2>
+                  <p>
+                      Are you sure you want to delete
+                      <strong>${service.title}</strong>?
+                  </p>
+                  <div class="service-delete-modal__actions">
+                      <button type="button"
+                              class="btn"
+                              popovertarget="delete-service-${serviceId}"
+                              popovertargetaction="hide">Cancel</button>
+                      <form method="post" action="${deleteUrl}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn">Yes, Delete</button>
+                      </form>
+                  </div>
               </div>
-              <h3>{{ service.title }}</h3>
-              <p>{{ service.description }}</p>
-              <div class="service-actions">
-                {%if perms.main.change_service %}
-                <a href="{% url 'main:edit_service' service.id %}" class="btn btn-circle">
-                  <span class="icon-mask cta"
-                      style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
-                      aria-hidden="true">
-                </span>
-                </a>
-                {% endif %}
-                {%if user.is_superuser %}
-                <button type="button"
-                        class="btn btn-circle"
-                        popovertarget="delete-service-{{ service.id }}"
-                        aria-label="Delete {{ service.title }}"
-                        title="Delete service">
-                     <span class="icon-mask cta"
-                      style="--icon-url: url('{% static 'img/delete-icon.png' %}')"
-                      aria-hidden="true">
-                    </span>
+            </div>`
+        : '';
+
+    const isStarredClass = service.is_starred ? " is-starred" : "";
+    const starText = service.is_starred ? "Unstar" : "Star";
+    const starTitle = service.star_count > 0
+        ? `Starred by ${service.starred_by_names}`
+        : "Be the first to give star!";
+
+    // Komponen card
+    const completeCardHtml = `
+        <div class="icon" aria-hidden="true">
+            <span class="icon-mask"
+                  style="--icon-url: url('{% static 'img/' %}${service.icon}')"></span>
+        </div>
+        <h3>${service.title}</h3>
+        <p>${service.description}</p>
+        <div class="service-actions">
+            ${editHtml}
+            ${deleteButtonHtml}
+            <form method="post" action="${starUrl}" class="star-form">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn${isStarredClass}"
+                        title="${starTitle}">
+                    <span aria-hidden="true">★</span>
+                    ${starText}
+                    <span class="star-count">${service.star_count}</span>
                 </button>
-                {% endif %}
-                <form method="post" action="{% url 'main:toggle_star' service.id %}" class="star-form">
-                  {% csrf_token %}
-                  <button type="submit"
-                          class="btn {% if user in service.starred_by.all %} is-starred{% endif %}"
-                          title="{% if service.starred_by.all %}Starred by {{ service.starred_by.all|join:', ' }}{% else %}Be the first to give star!{% endif %}">
-                      <span aria-hidden="true">★</span>
-                      {% if user in service.starred_by.all %}Unstar{% else %}Star{% endif %}
-                      <span class="star-count">{{ service.starred_by.count }}</span>
-                  </button>
-                </form>
-              </div>
-            </article>
-            {% include "components/service_star.html" with service=service %}
-            {% if user.is_superuser %}
-              {% include "components/service_delete_modal.html" with service=service %}
-            {% endif %}
-          {% empty %}
-            {% if title_query %}
-              <p class="empty-state">Not found.</p>
-            {% else %}
-              <p class="empty-state">Coming soon!</p>
-            {% endif %}
-          {% endfor %}
+            </form>
         </div>
-      </section>
-    </main>
+        ${deleteModalHtml}
+    `;
+
+    articleElement.innerHTML = completeCardHtml;
+    return articleElement;
+  }
+
+  // Fetch data service
+  async function fetchServices(searchQuery = "") {
+      if (servicesAbortController) servicesAbortController.abort();
+      servicesAbortController = new AbortController();
+
+      try {
+          displayPageSection({ showLoading: true });
+          
+          const url = searchQuery ? `${BASE_SERVICES_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_SERVICES_ENDPOINT;
+          
+          const response = await fetch(url, {
+              headers: { 'Accept': 'application/json' },
+              signal: servicesAbortController.signal,
+          });
+
+          if (!response.ok) throw new Error('Failed to fetch data');
+
+          const serviceData = await response.json();
+
+          if (serviceData.length === 0) {
+            emptyState.textContent = searchQuery ? 'Not found.' : 'Coming soon!';
+            displayPageSection({ showEmpty: true });
+          } else {
+              gridContainer.innerHTML = '';
+              serviceData.forEach(item => {
+                  gridContainer.appendChild(buildServiceCardElement(item));
+              });
+              displayPageSection({ showGrid: true });
+          }
+      } catch (error) {
+          if (error.name === 'AbortError') return;
+          console.error('Error loading services:', error);
+          displayPageSection({ showError: true });
+      }
+  }
+
+  // Event Handlers untuk Form Search
+  searchForm.addEventListener('submit', function(e) {
+      e.preventDefault(); // Mencegah reload halaman
+      fetchServices(searchInput.value.trim()); // Jalankan pencarian via AJAX
+  });
+
+  // Start application
+  fetchServices(searchInput.value.trim());
+  </script>
 {% endblock content %}

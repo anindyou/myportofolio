@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 from django.core import serializers
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 import datetime
 
@@ -120,18 +120,10 @@ def edit_experience(request, experience_id):
 # ====================================== Service ======================================
 
 def show_service(request):
-    json_response = get_service_json(request)
-
-    services = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    services = [service.object for service in services]
     title_query = request.GET.get("title", "").strip() 
     
     context = {
         "name" : "Anindya Raihani Hassan",
-        "service_list" : services,
         "heading" : "What I bring to the table",
         "caption" : "A mix of skills I've picked up, from crafting interfaces to writing the code behind them.",
         "title_query": title_query,
@@ -173,13 +165,30 @@ def delete_service(request, service_id):
 
 def get_service_json(request):
     title_query = request.GET.get("title", "").strip()
-    service = Service.objects.all()
+    service = Service.objects.prefetch_related('starred_by').all()
 
     if title_query:
         service = service.filter(title__icontains=title_query)
 
-    service_json = serializers.serialize("json", service, use_natural_foreign_keys=True)
-    return HttpResponse(service_json, content_type="application/json")
+    data = []
+    for s in service:
+        starred_users = s.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(s.id),
+            "fields": {
+                "title": s.title,
+                "description": s.description,
+                "icon": s.icon,
+                "star_count": len(starred_users),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/")
 @permission_required('main.change_service', raise_exception=True)
