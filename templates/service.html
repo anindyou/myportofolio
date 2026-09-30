@@ -21,9 +21,6 @@
             <span aria-hidden="true">+</span>
             Add Service
         </button>
-        <button class="btn" onclick="showToast('Notifikasi Sistem', 'Service berhasil dimuat dengan baik!', 'success')">
-            Test Toast Notifikasi
-        </button>
       </div>
       {% endif %}
 
@@ -74,7 +71,14 @@
       emptyState.classList.toggle('hide', !showEmpty);
       gridContainer.classList.toggle('hide', !showGrid);
   }
-
+  function escapeHtml(value){
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+  }
   // Membuat elemen card service
   function buildServiceCardElement(item) {
     const service = item.fields;
@@ -103,7 +107,7 @@
         ? `<button type="button"
                     class="btn btn-circle"
                     popovertarget="delete-service-${serviceId}"
-                    aria-label="Delete ${service.title}"
+                    aria-label="Delete ${escapeHtml(service.title)}"
                     title="Delete service">
               <span class="icon-mask cta"
                     style="--icon-url: url('{% static 'img/delete-icon.png' %}')"
@@ -132,7 +136,7 @@
                   <h2 id="delete-service-title-${serviceId}">Delete Service?</h2>
                   <p>
                       Are you sure you want to delete
-                      <strong>${service.title}</strong>?
+                      <strong>${escapeHtml(service.title)}</strong>?
                   </p>
                   <div class="service-delete-modal__actions">
                       <button type="button"
@@ -151,17 +155,17 @@
     const isStarredClass = service.is_starred ? " is-starred" : "";
     const starText = service.is_starred ? "Unstar" : "Star";
     const starTitle = service.star_count > 0
-        ? `Starred by ${service.starred_by_names}`
+        ? `Starred by ${escapeHtml(service.starred_by_names)}`
         : "Be the first to give star!";
 
     // Komponen card
     const completeCardHtml = `
         <div class="icon" aria-hidden="true">
             <span class="icon-mask"
-                  style="--icon-url: url('{% static 'img/' %}${service.icon}')"></span>
+                  style="--icon-url: url('{% static 'img/' %}${escapeHtml(service.icon)}')"></span>
         </div>
-        <h3>${service.title}</h3>
-        <p>${service.description}</p>
+        <h3>${escapeHtml(service.title)}</h3>
+        <p>${escapeHtml(service.description)}</p>
         <div class="service-actions">
             ${editHtml}
             ${deleteButtonHtml}

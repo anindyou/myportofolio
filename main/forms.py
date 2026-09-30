@@ -1,6 +1,8 @@
 from django.forms import ModelForm, TextInput, Textarea, DateInput
 
 from main.models import Service, Experience
+from django.core.exceptions import ValidationError
+from django.utils.html import strip_tags
 
 class ServiceForm(ModelForm):
     class Meta:
@@ -38,6 +40,18 @@ class ServiceForm(ModelForm):
             ),
         }
 
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Service name can't be an HTML tag")
+        return title
+
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
+
+    def clean_icon(self):
+            return strip_tags(self.cleaned_data["icon"]).strip()
+    
 class ExperienceForm(ModelForm):
     class Meta:
         model = Experience
