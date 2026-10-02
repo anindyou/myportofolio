@@ -4,7 +4,7 @@ NPM: 2506553295
 
 Kelas: PBP B
 
-### Tugas 1
+## Tugas 1
 
 1. Ya, saya menggunakan elemen semantik di struktur html. Elemen yang saya gunakan antara lain:
 
@@ -43,7 +43,7 @@ Terdapat beberapa penyesuaian yang saya lakukan di Tutorial 2 (tidak mengikuti t
 - **Menghapus `EXPERIENCE_CHOICES`** sejak awal desain portofolio ini tidak menggunakan kategori pengalaman, dan diganti dengan field `institution` (nama penyelenggara/instansi) yang dirasa lebih relevan.
 - **Navigation bar di halaman utama** berfungsi untuk _scroll_ ke bagian terkait di halaman yang sama. Halaman baru `experience.html` diakses lewat tombol **"View More"**, bukan lewat item navbar.
 
-### Tugas 2
+## Tugas 2
 
 1. Alur website
 
@@ -63,7 +63,7 @@ Dengan menyimpan data di model, terdapat satu sumber data yang terstruktur dan k
 
 Contohnya: di awal saya mengikuti template untuk memiliki field `category`, tetapi saya menghapus field ini dan menggantinya dengan field `institution`. Perubahan pada kode di `models.py` ini menyebabkan saya harus menjalankan kedua perintah tersebut untuk menerapkan perubahan skema tersebut ke database.
 
-### Alur Pengerjaan & Penggunaan AI Pada Tugas 2
+## Alur Pengerjaan & Penggunaan AI Pada Tugas 2
 
 Perintah tugas 1 kurang lebih sama dengan apa yang saya lakukan di tutorial/tugas sebelumnya. Oleh karena itu, sebagian besar pekerjaan dilakukan dengan menyalin kode yang sudah ada lalu menyesuaikannya dengan kebutuhan baru. Misalnya, karena di tutorial 2 saya sudah membuat halaman `experience`, di tugas 2 saya hanya perlu menyalin kode tersebut (model, views, template, urls) kemudian diganti dengan fields dan elemen-elemen yang ada di `service`. Selain itu, karena saat ini halaman utama (main) dan halaman khusus per section desainnya sama, styling CSS pun juga disalin dan disesuaikan.
 
@@ -72,7 +72,7 @@ Selama pengerjaan tugas, saya menggunakan Claude sebagai alat bantu belajar, deb
 - Saya menggunakan AI untuk memahami alur desain navigasi yang baik. Salah satu hasilnya adalah, keputusan membuat navigation bar di halaman utama yang hanya mengarah ke section preview (di halaman yang sama). Akses menuju page `experience.html` dan `service.html` disediakan lewat button `View more` di masing-masing bagian.
 - Membantu bagaimana unit test bekerja dan debugging test yang gagal akibat perubahan model dan konten di template.
 
-### Tugas 3
+## Tugas 3
 
 1. `ModelForm` digunakan karena `ModelForm` secara otomatis men-generate field input berdasarkan struktur model yang sudah didefinisikan (`Service`), termasuk validasi tipe data tanpa perlu ditulis ulang secara manual. Selain itu, `ModelForm` juga menyediakan method `.save()` yang langsung menyimpan data ke database sesuai model terkait, sehingga mengurangi risiko kesalahan penulisan dan duplikasi kode antara struktur form dan struktur model.
 
@@ -82,7 +82,7 @@ Selama pengerjaan tugas, saya menggunakan Claude sebagai alat bantu belajar, deb
 
 3. Pertama, _view_ mengambil data dari database melalui Django ORM (`Service.objects.all()`), yang hasilnya berisi objek-objek Python. Objek-objek ini tidak bisa langsung dikirim sebagai response HTTP karena format aslinya adalah objek Python, bukan teks. Oleh karena itu, dilakukan proses _serialization_ menggunakan `serializers.serialize("json", ...)`, yang mengubah setiap objek model menjadi representasi teks dalam format JSON (memuat nama model, primary key, dan nilai setiap field). Hasil serialisasi ini kemudian dikembalikan sebagai `HttpResponse` dengan `content_type="application/json"`. Pada `show_service`, teks JSON ini kemudian diambil kembali dan diubah balik menjadi objek Python melalui `serializers.deserialize`, sehingga datanya dapat diproses dan ditampilkan kembali di template menggunakan sintaks seperti `{{ service.title }}`.
 
-### Tugas 4
+## Tugas 4
 
 Log Chat AI: https://claude.ai/share/8dac07a3-20c6-4a4e-b368-f13e1e24648d
 
@@ -94,12 +94,31 @@ Menerapkan manajemen authorization, menambahkan peran editor via Django Admin, m
 
 Untuk penerapan authentication, authorization, dan cookies di Django, saya berpatokan pada tutorial 4. Saya menggunakan generative AI (Claude) untuk membantu membuat fitur `starred_by` dan memahami tujuan di tugas 4 seperti membuat role editor, menambahkannya melalui admin, dan membantu debugging styling di css. Selain itu, supaya hasil yang diberikan AI sesuai kebutuhan, saya meminta AI untuk mengonfirmasi pemahamannya terlebih dahulu sebelum memberi solusi. Jika terdapat kekurangan informasi, maka saya bisa memberi konteks tambahan (ex: potongan kode, preferensi pribadi). Jika
 
-## Bagian yang dibantu AI
+### Bagian yang dibantu AI
 
 1. Implementasi role editor menggunakan objek bawaan { perms }
 2. Debugging masalah pada UI
 
-## Keterbatasan AI
+### Keterbatasan AI
 
 1. Beberapa saran AI tidak saya pakai, misalnya cara menyembunyikan tombol add/edit/delete dari role tertentu. Setelah saya coba tulis sendiri langsung di HTML, ternyata cara tersebut sudah cukup berjalan dengan baik, sehingga saya tidak jadi memakai saran AI.
 2. Meski sudah saya minta untuk tidak membuat asumsi, AI kadang tetap memberi asumsi yang kurang sesuai karena kurangnya konteks yang saya berikan. Misalnya, saat membuat role admin, AI berasumsi editor juga bisa melakukan add/delete, padahal seharusnya editor hanya memiliki izin `can_change_service`. Karena itu, saya hanya mengambil bagian saran yang relevan dan menyesuaikan sisanya secara manual.
+
+### Tugas 5
+
+Log Chat AI: https://claude.ai/share/06adda4c-8392-4b57-b5aa-550e2ac64c52
+
+## Penggunaan AI
+
+Secara garis besar, saya menggunakan AI untuk membantu saya menyesuaikan implementasi AJAX pada bagian `experience`. Contoh nyatanya seperti memastikan bahwa semantik kode baru tetap konsisten (seperti id dan label) dan debugging `experience-list` di script supaya tampilannya tetap sama dengan kode lama.
+
+Untuk kode yang dibuat di Tugas 5 kurang lebih hanya mengubah beberapa bagian di kode Tutorial 5. Beberapa fitur tambahan yang saya taruh adalah untuk validasi end date >= start date di penambahan `experience`.
+
+### Pertanyaan Reflektif
+
+1. Debouncing adalah teknik menunda eksekusi suatu fungsi sampai pengguna berhenti melakukan suatu aktivitas selama waktu tertentu. Pada fitur pencarian menggunakan AJAX, debouncing digunakan agar request ke server tidak dikirim setiap kali pengguna mengetik satu karakter. Hal ini dapat mengurangi jumlah request ke server, menghemat resource, dan membuat fitur pencarian lebih efisien.
+2. `fetch()` digunakan untuk melakukan request ke server dan proses tersebut berjalan secara asinkronus. `await` digunakan untuk menunggu sampai `fetch()` selesai sebelum program lanjut ke baris berikutnya. Dengan `await`, kita bisa memastikan bahwa response sudah diterima sebelum mencoba mengolah datanya.
+   Jika kita tidak menggunakan `await`, `fetch()` akan langsung mengembalikan Promise (bukan response). Akibatnya, jika kita langsung mencoba pake data tersebut, datanya belum tersedia dan dapat menyebabkan error atau hasil yang tidak sesuai.
+3. XSS (Cross-Site Scripting) adalah serangan berupa penyisipan kode/script berbahaya ke dalam halaman web sehingga script tersebut dapat dijalankan di browser pengguna lain.
+   Data yang ditampilkan melalui AJAX/JS lebih rentan jika data dari server/input pengguna langsung dimasukkan ke HTML menggunakan `innerHTML` tanpa melakukan escaping. Jika input pengguna berisi kode JS dan kode tersebut dimasukkan langsung dengan `innerHTML`, browser dapat menganggapnya sebagai bagian dari HTML dan menjalankannya.
+   Sementara itu, data yang ditampilkan menggunakan template Django secara default akan di-escape. Jadi karakter khusus seperti `<` dan `>` tidak langsung dianggap sebagai tag HTML sehingga risiko XSS lebih kecil.
