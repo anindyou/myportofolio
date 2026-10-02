@@ -86,7 +86,7 @@ class ExperienceForm(ModelForm):
             ),
             "institution": TextInput(
                         attrs={
-                            "placeholder": "Who accomodate this idk",
+                            "placeholder": "Place of experience",
                             "maxlength": 255,
                         }
             ),
@@ -101,3 +101,25 @@ class ExperienceForm(ModelForm):
                         }
             ),
         }
+
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Experience name can't be an HTML tag")
+        return title
+    
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
+
+    def clean_institution(self):
+        institution = self.cleaned_data.get("institution")
+        if not institution:
+            return None
+        return strip_tags(institution).strip() or None
+
+    def clean_date(self):
+        cleaned = super().clean()
+        start, end = cleaned.get("started_at"), cleaned.get("ended_at")
+        if start and end and end < start:
+            self.add_error("ended_at", "End date can't be earlier than start date")
+        return cleaned
