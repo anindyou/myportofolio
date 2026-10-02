@@ -8,9 +8,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required, permission_required
 
-from django.core import serializers
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 import datetime
 
@@ -38,33 +37,58 @@ def show_main(request):
 # ====================================== Experience ======================================
 
 def show_experience(request):
-    json_response = get_experience_json(request)
-    
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    experiences = [experience.object for experience in experiences]
     title_query = request.GET.get("title", "").strip() 
         
     context = {
         "name": "Anindya Raihani Hassan",
-        "experience_list": experiences,
         "heading" : "Where I've Been",
         "caption" : "A few things I've worked on and learned from along the way.",
         "title_query": title_query,
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
-    experience = Experience.objects.all()
+    experience = Experience.objects.all().order_by("-started_at")
 
     if title_query:
         experience = experience.filter(title__icontains=title_query)
 
-    experience_json = serializers.serialize("json", experience)
-    return HttpResponse(experience_json, content_type="application/json")
+    data = []
+    for e in experience:
+        data.append({
+            "pk": str(e.id),
+            "fields": {
+                "title": e.title,
+                "institution": e.institution,
+                "description": e.description,
+                "started_at": e.started_at.strftime("%Y-%m-%d"),
+                "ended_at": e.ended_at.strftime("%Y-%m-%d") if e.ended_at else None,
+                "is_ongoing": e.is_ongoing,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Only owner can add experience."},
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "New experience added successfully!", "pk": str(experience.id)},
+            status=201,
+        )
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+    
 
 @login_required(login_url="/login/")
 def create_experience(request):

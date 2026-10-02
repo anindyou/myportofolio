@@ -762,7 +762,7 @@ section { padding: var(--space-12) var(--container-padding); }
         flex-direction: column-reverse;
     }
 
-    .service-form-modal__actions .button {
+    .service-form-modal__actions .btn {
         width: 100%;
         text-align: center;
     }
