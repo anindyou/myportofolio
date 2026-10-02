@@ -117,7 +117,7 @@ class ExperienceForm(ModelForm):
             return None
         return strip_tags(institution).strip() or None
 
-    def clean_date(self):
+    def clean(self):
         cleaned = super().clean()
         start, end = cleaned.get("started_at"), cleaned.get("ended_at")
         if start and end and end < start:
