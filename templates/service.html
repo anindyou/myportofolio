@@ -45,11 +45,15 @@
   {% if user.is_superuser %}
     {% include "components/service_form_modal.html" %}
   {% endif %}
+  {% csrf_token %}
   <script>
   // Konfigurasi
-  const BASE_SERVICES_ENDPOINT = "{% url 'main:get_service_json' %}";
+  const BASE_SERVICES_ENDPOINT = "{% url 'api:service-list' %}";
+  const DETAIL_SERVICE_ENDPOINT = "{% url 'api:service-detail' '00000000-0000-0000-0000-000000000000' %}"
+  const STAR_SERVICE_ENDPOINT = "{% url 'api:service-star' '00000000-0000-0000-0000-000000000000' %}"
   const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
-  const CAN_EDIT = "{{ perms.main.change_service|yesno:'true,false' }}" === "true";
+  const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+  const CAN_EDIT = "{{ can_edit|yesno:'true,false' }}" === "true";
   let servicesAbortController;
 
   // Elemen DOM
@@ -59,10 +63,17 @@
   const gridContainer = document.getElementById('grid');
   const searchForm = document.getElementById('service-search-form');
   const searchInput = document.getElementById('search-input');
+  const serviceForm = document.getElementById('service-form');
 
   // Debouncing
   const SEARCH_DEBOUNCE_DELAY = 300;
   let searchDebounceTimer;
+
+  function getCookie(name){
+    const prefix = `${name}=`;
+    const cookie = document.cookie.split(';').map(value => value.trim()).find(value => value.startsWith(prefix));
+    return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+  }
 
   // Menyembunyikan/Menampilkan section halaman
   function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
@@ -71,6 +82,7 @@
       emptyState.classList.toggle('hide', !showEmpty);
       gridContainer.classList.toggle('hide', !showGrid);
   }
+
   function escapeHtml(value){
     return String(value ?? '')
         .replaceAll('&', '&amp;')
@@ -79,10 +91,14 @@
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
   }
+
+  function serviceEndpoint(pattern, id){
+    return pattern.replace('00000000-0000-0000-0000-000000000000', id);
+  }
+
   // Membuat elemen card service
-  function buildServiceCardElement(item) {
-    const service = item.fields;
-    const serviceId = item.pk;
+  function buildServiceCardElement(service) {
+    const serviceId = service.id;
 
     const articleElement = document.createElement('article');
     articleElement.className = 'service-card';
@@ -90,11 +106,7 @@
     // Dummy UUID digunakan untuk digantikan oleh ID asli dari data JSON
     const editUrl = "{% url 'main:edit_service' '00000000-0000-0000-0000-000000000000' %}"
         .replace('00000000-0000-0000-0000-000000000000', serviceId);
-    const deleteUrl = "{% url 'main:delete_service' '00000000-0000-0000-0000-000000000000' %}"
-        .replace('00000000-0000-0000-0000-000000000000', serviceId);
-    const starUrl = "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}"
-        .replace('00000000-0000-0000-0000-000000000000', serviceId);
-
+    
     const editHtml = CAN_EDIT
         ? `<a href="${editUrl}" class="btn btn-circle">
               <span class="icon-mask cta"
@@ -139,14 +151,15 @@
                       <strong>${escapeHtml(service.title)}</strong>?
                   </p>
                   <div class="service-delete-modal__actions">
-                      <button type="button"
+                    <button type="button"
                               class="btn"
                               popovertarget="delete-service-${serviceId}"
-                              popovertargetaction="hide">Cancel</button>
-                      <form method="post" action="${deleteUrl}">
-                          {% csrf_token %}
-                          <button type="submit" class="btn">Yes, Delete</button>
-                      </form>
+                              popovertargetaction="hide">Cancel
+                    </button>
+                    <button type="button" class="btn"
+                              data-action="delete"
+                              data-id="${escapeHtml(serviceId)}">Yes, Delete
+                    </button>
                   </div>
               </div>
             </div>`
@@ -157,6 +170,21 @@
     const starTitle = service.star_count > 0
         ? `Starred by ${escapeHtml(service.starred_by_names)}`
         : "Be the first to give star!";
+
+    const starHtml = IS_AUTHENTICATED
+        ? `<button type="button"
+                   class="btn${isStarredClass}"
+                   data-action="star"
+                   data-id="${escapeHtml(serviceId)}"
+                   title="${starTitle}">
+               <span aria-hidden="true">★</span>
+               ${starText}
+               <span class="star-count">${service.star_count}</span>
+           </button>`
+        : `<a href="{% url 'main:login' %}" class="btn">
+               <span aria-hidden="true">★</span> Login to star
+               <span class="star-count">${service.star_count}</span>
+           </a>`;
 
     // Komponen card
     const completeCardHtml = `
@@ -169,16 +197,7 @@
         <div class="service-actions">
             ${editHtml}
             ${deleteButtonHtml}
-            <form method="post" action="${starUrl}" class="star-form">
-                {% csrf_token %}
-                <button type="submit"
-                        class="btn${isStarredClass}"
-                        title="${starTitle}">
-                    <span aria-hidden="true">★</span>
-                    ${starText}
-                    <span class="star-count">${service.star_count}</span>
-                </button>
-            </form>
+            ${starHtml}
         </div>
         ${deleteModalHtml}
     `;
@@ -186,9 +205,11 @@
     articleElement.innerHTML = completeCardHtml;
     return articleElement;
   }
+  
   function closeServiceModal() {
     document.getElementById("add-service-modal").hidePopover();
   }
+
   // Fetch data service
   async function fetchServices(searchQuery = "") {
       if (servicesAbortController) servicesAbortController.abort();
@@ -196,102 +217,76 @@
 
       try {
           displayPageSection({ showLoading: true });
-          
-          const url = searchQuery ? `${BASE_SERVICES_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_SERVICES_ENDPOINT;
-          
+          const url = new URL(BASE_SERVICES_ENDPOINT, window.location.origin);
+          if (searchQuery) url.searchParams.set('title', searchQuery);
+
           const response = await fetch(url, {
               headers: { 'Accept': 'application/json' },
               signal: servicesAbortController.signal,
           });
 
-          if (!response.ok) throw new Error('Failed to fetch data');
-
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const serviceData = await response.json();
-
-          if (serviceData.length === 0) {
-            emptyState.textContent = searchQuery ? 'Not found.' : 'Coming soon!';
-            displayPageSection({ showEmpty: true });
-          } else {
-              gridContainer.innerHTML = '';
-              serviceData.forEach(item => {
-                  gridContainer.appendChild(buildServiceCardElement(item));
-              });
-              displayPageSection({ showGrid: true });
-          }
+          emptyState.textContent = searchQuery ? 'No services match your search.' : 'No services yet.';
+          gridContainer.replaceChildren(...serviceData.map(buildServiceCardElement));
+          displayPageSection({showGrid: serviceData.length > 0, showEmpty: serviceData.length == 0});
       } catch (error) {
           if (error.name === 'AbortError') return;
-          console.error('Error loading services:', error);
+          console.error(error);
           displayPageSection({ showError: true });
       }
   }
 
-  // Event Handlers untuk Form Search
-  function searchServices() {
-      fetchServices(searchInput.value.trim());
+  function apiErrorMessage(data, status){
+    const messages = Object.values(data).flat().filter(value => typeof value === 'string');
+    return messages.join(' ') || `Request failed (HTTP ${status}).`;
   }
+
+  async function writeService(url, method, payload) {
+    const response = await fetch(url, {
+        method,
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: payload === undefined ? undefined : JSON.stringify(payload),
+    });
+    if (response.status === 204) return null;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
+    return data;
+}
 
   searchInput.addEventListener("input", function() {
       clearTimeout(searchDebounceTimer);
 
-      searchDebounceTimer = setTimeout(function() {
-          searchServices();
-      }, SEARCH_DEBOUNCE_DELAY);
+      searchDebounceTimer = setTimeout(() => fetchServices(searchInput.value.trim()), SEARCH_DEBOUNCE_DELAY);
   });
 
   searchForm.addEventListener("submit", function(event) {
       event.preventDefault();
       clearTimeout(searchDebounceTimer);
-      searchServices();
+      fetchServices(searchInput.value.trim());
   });
-
-  const CREATE_SERVICE_ENDPOINT = "{% url 'main:create_service_ajax' %}";
-  const serviceForm = document.getElementById('service-form');
-
-// Membaca nilai cookie, digunakan untuk mengambil token CSRF
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-              const cookie = cookies[i].trim();
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
 
   // Mengirim data form ke server
   async function addService(event) {
       event.preventDefault();
-
       const submitButton = serviceForm.querySelector('button[type="submit"]');
       submitButton.disabled = true;
 
       try {
-          const response = await fetch(CREATE_SERVICE_ENDPOINT, {
-              method: 'POST',
-              headers: { 'X-CSRFToken': getCookie('csrftoken') },
-              body: new FormData(serviceForm),
-          });
-          const result = await response.json().catch(() => ({}));
-
-          if (response.ok) {
-              serviceForm.reset();
-              closeServiceModal();
-              showToast('Success', 'New service added successfully!', 'success');
-              fetchServices(searchInput.value.trim());
-          } else {
-              const errorMessages = result.errors
-                  ? Object.values(result.errors).flat().map(error => error.message)
-                  : [result.message || `A mistake occured (status ${response.status}).`];
-              showToast('Failed to add service', errorMessages.join(' '), 'error');
-          }
+        const fields = new FormData(serviceForm);
+        const payload = Object.fromEntries(
+            ['title', 'description', 'icon'].map(name => [name, fields.get(name)]));
+        await writeService(BASE_SERVICES_ENDPOINT, 'POST', payload);
+        serviceForm.reset();
+        closeServiceModal();
+        showToast('Success', 'New service added successfully!', 'success');
+        await fetchServices(searchInput.value.trim());
       } catch (error) {
-          console.error('Error adding service:', error);
-          showToast('Failed to add service', "Can't connect to the server. Please try again.", 'error');
+          showToast('Failed to add service', error.message, 'error');
       } finally {
           submitButton.disabled = false;
       }
@@ -300,6 +295,25 @@
   if (serviceForm) {
       serviceForm.addEventListener('submit', addService);
   }
+
+  gridContainer.addEventListener('click', async function(event) {
+    const button = event.target.closest('button[data-action]');
+    if (!button || button.disabled) return;
+    const action = button.dataset.action;
+    if (action === 'delete') button.closest('[popover]')?.hidePopover();
+    button.disabled = true;
+    try {
+        const pattern = action === 'star' ? STAR_SERVICE_ENDPOINT : DETAIL_SERVICE_ENDPOINT;
+        await writeService(serviceEndpoint(pattern, button.dataset.id),
+            action === 'star' ? 'POST' : 'DELETE');
+        showToast('Success', action === 'star' ? 'Star updated.' : 'Service deleted.', 'success');
+        await fetchServices(searchInput.value.trim());
+    } catch (error) {
+        showToast('Request failed', error.message, 'error');
+    } finally {
+        button.disabled = false;
+    }
+});
 
   // Start application
   fetchServices(searchInput.value.trim());

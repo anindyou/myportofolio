@@ -146,13 +146,15 @@ def edit_experience(request, experience_id):
 
 def show_service(request):
     title_query = request.GET.get("title", "").strip() 
-    
+    can_edit = request.user.is_superuser or request.user.groups.filter(name="Editor").exists()
+
     context = {
         "name" : "Anindya Raihani Hassan",
         "heading" : "What I bring to the table",
         "caption" : "A mix of skills I've picked up, from crafting interfaces to writing the code behind them.",
         "title_query": title_query,
         "form": ServiceForm(),
+        "can_edit": can_edit,
     }
     return render(request, "service.html", context)
 
