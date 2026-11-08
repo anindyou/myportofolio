@@ -42,7 +42,7 @@
 
     </section>
   </main>
-  {% if user.is_superuser %}
+  {% if can_edit %}
     {% include "components/service_form_modal.html" %}
   {% endif %}
   {% csrf_token %}
@@ -55,6 +55,7 @@
   const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
   const CAN_EDIT = "{{ can_edit|yesno:'true,false' }}" === "true";
   let servicesAbortController;
+  let editingServiceId = null;
 
   // Elemen DOM
   const loadingState = document.getElementById('loading');
@@ -102,18 +103,18 @@
 
     const articleElement = document.createElement('article');
     articleElement.className = 'service-card';
-
-    // Dummy UUID digunakan untuk digantikan oleh ID asli dari data JSON
-    const editUrl = "{% url 'main:edit_service' '00000000-0000-0000-0000-000000000000' %}"
-        .replace('00000000-0000-0000-0000-000000000000', serviceId);
     
     const editHtml = CAN_EDIT
-        ? `<a href="${editUrl}" class="btn btn-circle">
-              <span class="icon-mask cta"
-                    style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
-                    aria-hidden="true"></span>
-            </a>`
-        : '';
+        ? `<button type="button"
+               class="btn btn-circle"
+               data-action="edit"
+               data-id="${escapeHtml(serviceId)}"
+               aria-label="Edit ${escapeHtml(service.title)}">
+          <span class="icon-mask cta"
+                style="--icon-url: url('{% static 'img/edit-icon.png' %}')"
+                aria-hidden="true"></span>
+        </button>`
+    : '';
 
     const deleteButtonHtml = IS_SUPERUSER
         ? `<button type="button"
@@ -270,49 +271,76 @@
       fetchServices(searchInput.value.trim());
   });
 
-  // Mengirim data form ke server
-  async function addService(event) {
-      event.preventDefault();
-      const submitButton = serviceForm.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
+  async function submitService(event) {
+  event.preventDefault();
+  const submitButton = serviceForm.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
 
-      try {
-        const fields = new FormData(serviceForm);
-        const payload = Object.fromEntries(
-            ['title', 'description', 'icon'].map(name => [name, fields.get(name)]));
-        await writeService(BASE_SERVICES_ENDPOINT, 'POST', payload);
-        serviceForm.reset();
-        closeServiceModal();
-        showToast('Success', 'New service added successfully!', 'success');
-        await fetchServices(searchInput.value.trim());
-      } catch (error) {
-          showToast('Failed to add service', error.message, 'error');
-      } finally {
-          submitButton.disabled = false;
-      }
-  }
+  const isEditing = Boolean(editingServiceId);
+  try {
+    const fields = new FormData(serviceForm);
+    const payload = Object.fromEntries(
+      ['title', 'description', 'icon'].map(name => [name, fields.get(name)]));
 
-  if (serviceForm) {
-      serviceForm.addEventListener('submit', addService);
+    const url = isEditing
+      ? serviceEndpoint(DETAIL_SERVICE_ENDPOINT, editingServiceId)
+      : BASE_SERVICES_ENDPOINT;
+    await writeService(url, isEditing ? 'PATCH' : 'POST', payload);
+
+    closeServiceModal();
+    showToast('Success', isEditing ? 'Service updated.' : 'New service added successfully!', 'success');
+    await fetchServices(searchInput.value.trim());
+  } catch (error) {
+    showToast(isEditing ? 'Failed to update service' : 'Failed to add service', error.message, 'error');
+  } finally {
+    submitButton.disabled = false;
   }
+}
+
+if (serviceForm) {
+  serviceForm.addEventListener('submit', submitService);
+
+  // Modal ditutup -> kembali ke mode "tambah"
+  document.getElementById('add-service-modal').addEventListener('toggle', (event) => {
+    if (event.newState === 'closed') {
+      editingServiceId = null;
+      serviceForm.reset();
+    }
+  });
+}
 
   gridContainer.addEventListener('click', async function(event) {
-    const button = event.target.closest('button[data-action]');
-    if (!button || button.disabled) return;
-    const action = button.dataset.action;
-    if (action === 'delete') button.closest('[popover]')?.hidePopover();
-    button.disabled = true;
-    try {
-        const pattern = action === 'star' ? STAR_SERVICE_ENDPOINT : DETAIL_SERVICE_ENDPOINT;
-        await writeService(serviceEndpoint(pattern, button.dataset.id),
-            action === 'star' ? 'POST' : 'DELETE');
-        showToast('Success', action === 'star' ? 'Star updated.' : 'Service deleted.', 'success');
-        await fetchServices(searchInput.value.trim());
-    } catch (error) {
-        showToast('Request failed', error.message, 'error');
-    } finally {
-        button.disabled = false;
+  const button = event.target.closest('button[data-action]');
+  if (!button || button.disabled) return;
+
+  const action = button.dataset.action;
+  if (action === 'delete') button.closest('[popover]')?.hidePopover();
+  button.disabled = true;
+
+  try {
+    if (action === 'edit') {
+      const url = serviceEndpoint(DETAIL_SERVICE_ENDPOINT, button.dataset.id);
+      const response = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const service = await response.json();
+
+      editingServiceId = service.id;
+      for (const name of ['title', 'description', 'icon']) {
+        serviceForm.elements[name].value = service[name] ?? '';
+      }
+      document.getElementById('add-service-modal').showPopover();
+    } else {
+      const pattern = action === 'star' ? STAR_SERVICE_ENDPOINT : DETAIL_SERVICE_ENDPOINT;
+      await writeService(serviceEndpoint(pattern, button.dataset.id),
+          action === 'star' ? 'POST' : 'DELETE');
+      showToast('Success', action === 'star' ? 'Star updated.' : 'Service deleted.', 'success');
+      await fetchServices(searchInput.value.trim());
     }
+  } catch (error) {
+    showToast('Request failed', error.message, 'error');
+  } finally {
+    button.disabled = false;
+  }
 });
 
   // Start application
