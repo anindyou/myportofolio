@@ -127,7 +127,7 @@ Untuk kode yang dibuat di Tugas 5 kurang lebih hanya mengubah beberapa bagian di
 
 ## Tugas 6
 
-Log Chat AI: force_authenticate tidak cukup untuk membuktikan perlindungan CSRF berjalan
+Log chat AI: https://claude.ai/share/7ece4419-e0b9-455c-8412-39e249668997
 
 ### Penggunaan AI
 
