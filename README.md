@@ -4,6 +4,8 @@ NPM: 2506553295
 
 Kelas: PBP B
 
+# Progress Update
+
 ## Tugas 1
 
 1. Ya, saya menggunakan elemen semantik di struktur html. Elemen yang saya gunakan antara lain:
@@ -24,7 +26,7 @@ Elemen semantik ini membantu saya karena memberi struktur yang jelas sehingga sa
 
 3. Batasan dari static web adalah kurangnya fleksibilitas dalam manajemen konten. Ketika saya ingin menambahkan data seperti riwayat di bagian experience atau skill di services, saya harus menambahkannya di html secara manual. Oleh karena itu, di iterasi proyek selanjutnya saya ingin mengintegrasikan database yang nantinya menyimpan data-data yang sering di-update. Dengan begitu, data bisa dipanggil otomatis ke halaman web tanpa perlu edit html satu per satu.
 
-### Alur Pengerjaan & Penggunaan AI Pada Tugas 1
+### Alur Pengerjaan & Penggunaan AI
 
 link figma: https://www.figma.com/proto/AXqN1DCBqLUiTjETsTN8tg/Untitled?node-id=105-6601&t=tAFQbkDSLBSeoBXY-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&fuid=1569677707401958808
 
@@ -63,7 +65,7 @@ Dengan menyimpan data di model, terdapat satu sumber data yang terstruktur dan k
 
 Contohnya: di awal saya mengikuti template untuk memiliki field `category`, tetapi saya menghapus field ini dan menggantinya dengan field `institution`. Perubahan pada kode di `models.py` ini menyebabkan saya harus menjalankan kedua perintah tersebut untuk menerapkan perubahan skema tersebut ke database.
 
-## Alur Pengerjaan & Penggunaan AI Pada Tugas 2
+### Alur Pengerjaan & Penggunaan AI
 
 Perintah tugas 1 kurang lebih sama dengan apa yang saya lakukan di tutorial/tugas sebelumnya. Oleh karena itu, sebagian besar pekerjaan dilakukan dengan menyalin kode yang sudah ada lalu menyesuaikannya dengan kebutuhan baru. Misalnya, karena di tutorial 2 saya sudah membuat halaman `experience`, di tugas 2 saya hanya perlu menyalin kode tersebut (model, views, template, urls) kemudian diganti dengan fields dan elemen-elemen yang ada di `service`. Selain itu, karena saat ini halaman utama (main) dan halaman khusus per section desainnya sama, styling CSS pun juga disalin dan disesuaikan.
 
@@ -86,11 +88,11 @@ Selama pengerjaan tugas, saya menggunakan Claude sebagai alat bantu belajar, deb
 
 Log Chat AI: https://claude.ai/share/8dac07a3-20c6-4a4e-b368-f13e1e24648d
 
-#### Apa saja yang dikerjakan:
+### Apa saja yang dikerjakan:
 
 Menerapkan manajemen authorization, menambahkan peran editor via Django Admin, membatasi hak akses sesuai 4 role yang ada, menambah fitur `starred_by`, mengedit JSON supaya tetap sesuai ketentuan, dan menyesuaikan styling css untuk fitur-fitur baru yang ditambahkan
 
-#### Penggunaan AI:
+### Penggunaan AI:
 
 Untuk penerapan authentication, authorization, dan cookies di Django, saya berpatokan pada tutorial 4. Saya menggunakan generative AI (Claude) untuk membantu membuat fitur `starred_by` dan memahami tujuan di tugas 4 seperti membuat role editor, menambahkannya melalui admin, dan membantu debugging styling di css. Selain itu, supaya hasil yang diberikan AI sesuai kebutuhan, saya meminta AI untuk mengonfirmasi pemahamannya terlebih dahulu sebelum memberi solusi. Jika terdapat kekurangan informasi, maka saya bisa memberi konteks tambahan (ex: potongan kode, preferensi pribadi). Jika
 
@@ -104,11 +106,11 @@ Untuk penerapan authentication, authorization, dan cookies di Django, saya berpa
 1. Beberapa saran AI tidak saya pakai, misalnya cara menyembunyikan tombol add/edit/delete dari role tertentu. Setelah saya coba tulis sendiri langsung di HTML, ternyata cara tersebut sudah cukup berjalan dengan baik, sehingga saya tidak jadi memakai saran AI.
 2. Meski sudah saya minta untuk tidak membuat asumsi, AI kadang tetap memberi asumsi yang kurang sesuai karena kurangnya konteks yang saya berikan. Misalnya, saat membuat role admin, AI berasumsi editor juga bisa melakukan add/delete, padahal seharusnya editor hanya memiliki izin `can_change_service`. Karena itu, saya hanya mengambil bagian saran yang relevan dan menyesuaikan sisanya secara manual.
 
-### Tugas 5
+## Tugas 5
 
 Log Chat AI: https://claude.ai/share/06adda4c-8392-4b57-b5aa-550e2ac64c52
 
-## Penggunaan AI
+### Penggunaan AI
 
 Secara garis besar, saya menggunakan AI untuk membantu saya menyesuaikan implementasi AJAX pada bagian `experience`. Contoh nyatanya seperti memastikan bahwa semantik kode baru tetap konsisten (seperti id dan label) dan debugging `experience-list` di script supaya tampilannya tetap sama dengan kode lama.
 
@@ -122,3 +124,23 @@ Untuk kode yang dibuat di Tugas 5 kurang lebih hanya mengubah beberapa bagian di
 3. XSS (Cross-Site Scripting) adalah serangan berupa penyisipan kode/script berbahaya ke dalam halaman web sehingga script tersebut dapat dijalankan di browser pengguna lain.
    Data yang ditampilkan melalui AJAX/JS lebih rentan jika data dari server/input pengguna langsung dimasukkan ke HTML menggunakan `innerHTML` tanpa melakukan escaping. Jika input pengguna berisi kode JS dan kode tersebut dimasukkan langsung dengan `innerHTML`, browser dapat menganggapnya sebagai bagian dari HTML dan menjalankannya.
    Sementara itu, data yang ditampilkan menggunakan template Django secara default akan di-escape. Jadi karakter khusus seperti `<` dan `>` tidak langsung dianggap sebagai tag HTML sehingga risiko XSS lebih kecil.
+
+## Tugas 6
+
+Log Chat AI: force_authenticate tidak cukup untuk membuktikan perlindungan CSRF berjalan
+
+### Penggunaan AI
+
+Di awal saya menulis sendiri perubahan kode untuk bagian `experience` mengikuti tutorial 7. Setelah itu, baru saya menggunakan AI untuk membantu saya menyesuaikan implementasi REST API, debugging kode, dan membuat test case.
+
+### Pertanyaan Reflektif
+
+1. REST (REpresentational State Transfer) adalah arsitektur yang menetapkan batasan seperti client-server, stateless (tidak ada sesi client yang disimpan di server), cacheable, sistem berlapis, dan uniform interface.
+   Mengembalikan data dalam bentuk JSON belum dikatakan sebagai RESTful karena belum memenuhi kriteria/batasan dari REST. Di mana kalau JSON...
+   Kemudian, untuk perbedaan PUT dan PATCH, PUT digunakan untuk menggantikan seluruh elemen dari sebuah resource (kirim seluruh field objek). PATCH digunakan untuk memodifikasi sebagian (kirim data field yang ingin diubah tanpa memengaruhi field lainnya).
+2. Serializer akan mengubah data kompleks seperti queryset dan model instance Django jadi data python yang mudah dirender menjadi JSON, XML, dsb (Serialization). Sebaliknya, Serializer juga menerjemahkan data JSON dari klien menjadi data kompleks yang bisa disimpan ke database setelah divalidasi (Deserialization).
+   Keuntungannya dibandingkan JsonResponse manual adalah memiliki validasi otomatis, kode jadi lebih bersih (tidak perlu looping queryset), lebih mudah menangangi relasi antar model, dan terintegrasi dengan fitur DRF lainnya.
+3. Autentikasi adalah proses verifikasi identitas pengguna dengan username dan password, sedangkan Otorisasi adalah proses verifikasi hak akses pengguna terhadap suatu resource, seperti apakah bisa edit/hapus/tambah suatu objek.
+   Menyembunyikan tombol di template hanya agar pengguna tidak bisa melihat fungsi tersebut, tetapi tidak diikuti dengan proteksi/perlindungan tambahan.Pengguna bisa saja mengirim HTTP Request ke endpoint API (seperti DELETE /api/services/v1/). Tanpa Permission Class, request tersebut akan diterima dan dieksekusi.
+4. SessionAuthentication menggunakan cookie di browser untuk mengingat siapa yang sedang login. Browser akan otomatis menyisipkan cookie tiap seorang pengguna kirim request. Hal ini bisa dieksploitasi serangan CSRF di mana web jahat bisa memicu browser seorang pengguna untuk kirim request melalui server si korban. Oleh karena itu, token CSR (sebagai kode tersembunyi) dikirim bersama request untuk melindungi karena web jahat tidak bisa baca token CSRF sehingga server bisa menolak request tersebut.
+   Kemudian, alasan force_authenticate tidak cukup untuk membuktikan perlindungan CSRF berjalan adalah karena force_authenticate mengabaikan seluruh pengecekan token CSRF di Django (middleware). Tes yang menggunakan force_authenticate tidak akan pernah memerika token CSRF dan akan selalu sukses, padahal perlindungan CSRF nya sama sekali tidak ada. Maka dari itu harus menggunakan client.login() untuk tes karena metode ini memproses request secara normal dan tidak bypass middleware.
