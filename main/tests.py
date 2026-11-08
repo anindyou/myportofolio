@@ -37,25 +37,30 @@ class MainTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "experience.html")
-        self.assertContains(response, self.experience.title)
-        self.assertContains(response, self.experience.description)
-        self.assertContains(response, self.experience.institution)
-        self.assertContains(response, "On duty")
         self.assertContains(response, f'href="{reverse("main:show_main")}#experience"')
 
     def test_empty_experience_page(self):
         Experience.objects.all().delete()
-        response = self.client.get(reverse("main:show_experience"))
+        response = self.client.get(reverse("api:experience-list"))
 
-        self.assertContains(response, "Coming soon!")
+        self.assertEqual(response.data, [])
+
+    def test_experience_page_shows_data(self):
+        response = self.client.get(reverse("api:experience-list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["title"], self.experience.title)
+        self.assertEqual(response.data[0]["description"], self.experience.description)
+        self.assertEqual(response.data[0]["institution"], self.experience.institution)
+        self.assertIsNone(response.data[0]["ended_at"])
 
     def test_completed_experience(self):
         self.experience.ended_at = timezone.now().date()
         self.experience.save()
-        response = self.client.get(reverse("main:show_experience"))
+        response = self.client.get(reverse("api:experience-list"))
 
         self.assertFalse(self.experience.is_ongoing)
-        self.assertNotContains(response, "On duty")
+        self.assertIsNotNone(response.data[0]["ended_at"])
 
 class ServiceTest(TestCase):
     def setUp(self):
@@ -77,14 +82,12 @@ class ServiceTest(TestCase):
         self.assertEqual(self.service.icon, "figma-icon.png")
 
     def test_service_page_shows_data(self):
-        response = self.client.get(reverse("main:show_service"))
-
-        self.assertContains(response, self.service.title)
-        self.assertContains(response, self.service.description)
-
+        response = self.client.get(reverse("api:service-list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data[0]["title"], self.service.title)
+        self.assertEqual(response.data[0]["description"], self.service.description)
     def test_empty_service_page(self):
         Service.objects.all().delete()
-        response = self.client.get(reverse("main:show_service"))
+        response = self.client.get(reverse("api:service-list"))
 
-        self.assertContains(response, "Coming soon!")
-        self.assertNotContains(response, "UI/UX Design")
+        self.assertEqual(response.data, [])
